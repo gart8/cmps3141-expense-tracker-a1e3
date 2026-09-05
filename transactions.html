@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Transactions</title>
+
+    <style>
+        .container {
+            width: 40%;
+            margin: 0 auto;
+        }
+        .section {
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .logo {
+            width: 84px;
+            height: 84px;
+            border: 2px solid black;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+     <!-- HEADER LOGO + TITLE -->
+    <div class="header-logo">
+        <div class="logo"></div>
+        <h1>Household Expense Tracker</h1>
+    </div>
+
+    <!-- MENU BAR -->
+    <div class="section">
+        <nav>
+            <strong>Menu:</strong>
+            <a href="index.html">Dashboard</a> |
+            <a href="add-expense.html">Add Expense</a> |
+            <a href="transactions.html">Transactions</a> |
+            <a href="#">Profile (placeholder)</a> |
+            <a href="#">Settings (placeholder)</a> |
+            <a href="#">Help (placeholder)</a>
+        </nav>
+        <hr>
+
+    </div>
+
+    <div class="section">
+        <p><em>List of all recorded expenses and their balance impacts</em></p> 
+<p><strong>5 transactions recorded</strong></p>
+   <div class="section">
+       
+    </div>
+        <hr>
+    </div>
+
+
+<div class="section">
+<strong>Search:</strong>
+        <input type="text" placeholder="Search transactions...">
+      <br><br>
+        <button>Filter (placeholder)</button> |
+        <button>Sort (placeholder)</button> |
+        <button>Export (placeholder)</button>
+
+        <hr>
+    </div>
+ 
+
+    <div class="section">
+        <table border="1" cellpadding="8">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Total Expense</th>
+                    <th>Expense Split</th>
+                    <th>Payment Split</th>
+                    <th>Balance Impact</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td>2026-08-21</td>
+                    <td>Groceries</td>
+                    <td>$60</td>
+                    <td>Shared (50/50)</td>
+                    <td>Neo: 0<br>Trinity: 60<br>Joint: 0</td>
+                    <td>Neo owes Trinity $30</td>
+                </tr>
+
+                <tr>
+                    <td>2026-08-20</td>
+                    <td>Household supplies</td>
+                    <td>$80</td>
+                    <td>Shared (50/50)</td>
+                    <td>Neo: 0<br>Trinity: 80<br>Joint: 0</td>
+                    <td>Neo owes Trinity $40</td>
+                </tr>
+
+                <tr>
+                    <td>2026-08-19</td>
+                    <td>Takeout dinner</td>
+                    <td>$60</td>
+                    <td>Shared (50/50)</td>
+                    <td>Neo: 0<br>Trinity: 60<br>Joint: 0</td>
+                    <td>Neo owes Trinity $30</td>
+                </tr>
+
+                <tr>
+                    <td>2026-08-18</td>
+                    <td>Trinity phone case</td>
+                    <td>$20</td>
+                    <td>Trinity (personal)</td>
+                    <td>Neo: 0<br>Trinity: 0<br>Joint: 20</td>
+                    <td>Trinity owes Joint $20</td>
+                </tr>
+
+                <tr>
+                    <td>2026-08-17</td>
+                    <td>Neo gas</td>
+                    <td>$40</td>
+                    <td>Neo (personal)</td>
+                    <td>Neo: 40<br>Trinity: 0<br>Joint: 0</td>
+                    <td>No balance change</td>
+                </tr>
+            </tbody>
+        </table>
+        <hr>
+    </div>
+
+    
+
+</div>
+
+</body>
+</html>
