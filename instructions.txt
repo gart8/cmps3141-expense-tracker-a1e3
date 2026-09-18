@@ -1,0 +1,97 @@
+PREVIOUS EXERCISE INSTRUCIONS: Expenses Tracker App Part1 (25%)
+⚠
+You are not allowed to use any CSS or JS for Exercise 2 and 3, except the few properties displayed in lecture (e.g. color, font
+size, font-weight), if you must. You will add CSS in the next assignment, but the focus of this one is to learn to write good HTML.
+The core of the assignment is tracking and calculating a balance between two or more parties via expense app. This year to freshen things
+up a bit I using the same concept as below but can be modified as a new app theme with one of the following:
+1. Roommate Expense Tracker: A common and relatable scenario for students. The app could track shared expenses like rent, utilities,
+and groceries. The wireframe could include different roommates' names and a running tally of who owes whom.
+2. Trip Expense Splitter: This theme involves a group of friends on a trip. The app would track expenses paid by different people for
+shared activities, meals, or accommodation. This adds a layer of complexity since there could be more than two people, requiring
+students to consider how to handle multiple balances.
+3. Small Business Partnership: Two or more partners in a business need to track shared expenses and investments. This theme could
+introduce more formal language and scenarios, such as tracking business travel, supplies, or marketing costs.
+Concept Idea: Neo and Trinity live together as a couple but prefer to maintain separate finances. Each of them has their own bank account
+and personal credit card, but they also share a joint credit card. They use the joint credit card to pay for shared expenses and split the bill
+equally at the end of each month.
+However, this plan doesn't always work out. Sometimes one partner may pay for joint expenses with their personal card, or pay for personal
+expenses with the joint card. This can happen for various reasons, such as a more advantageous points program on the joint credit card or a
+temporary lack of funds.
+To keep track of these anomalies, the currently use a 
+spreadsheet that tracks who owes whom what. The spreadsheet is organized in columns
+based on how each transaction affects the total balance, such as "Trinity paid for Joint (expense)" and "Joint card paid for Neo" being in the
+same column because they both add half (i.e., X/2 where X is the amount) to the total balance. keep track of these “anomalies” to know who
+owes whom what.
+Task 1: Usability problems with their current method (10%)
+3/9
+https://doit.ub.edu.bz/mod/assign/view.php?id=6198&action=editsubmission
+8/21/26, 3:25 PM
+CMPS3141: Assignment 1 - AS1-HTML - Edit submission
+Copy the spreadsheet over and play around with it a bit.
+What is the most important usability dimension for this app?
+What usability problems can you detect with this method?
+These may be problems inherent in using spreadsheets for these kinds of tasks, or problems with the design of this particular spreadsheet.
+For each issue, note which dimension of usability (Learnability, Efficiency, Safety) it affects.
+Task 2: Wireframe of app to help them manage expenses in a better way (15%)
+As their usability minded friend who dabbles in web development, you are fed up watching them struggle with this spreadsheet, so you
+decided to build an app for them.
+Design an app that would help them manage these expenses without the issues of the spreadsheet. Wireframe the UI you have in mind with
+HTML. That is, create an HTML document demonstrating what your app would look like after some representative data has been entered.
+Include text, images, form fields with data in them, buttons, selectors, and other controls, but don't make them do anything yet.
+Don't worry about CSS or implementation yet, your goal in this assignment is to design a good interface. You will implement it in the next
+assignment. Also don't worry about painting yourself into a corner: you will be able to change any design decisions later on, so feel free to
+be creative and design a UI that you think would be great.
+
+CONTINUATION INSTRUCTION FOR UPDATING EXERCISE: Couple Expenses App Implementation (60%)
+It is now time to implement an app for the expenses problem we explored in HW1. This time, you have also learned a little bit of CSS, and
+you can also use that in your prototype.
+You don't need to use any of the HTML you have wireframed in AS1, you can (and likely should) change your design decisions.
+For this exercise I want you to think hard about the problem space, and create an innovative efficient interface that is tailored to the
+problem, rather than adopting a design that is similar to other expenses apps out there that have different goals.
+Your interface should make common use cases efficient, and uncommon use cases possible.
+Your app should focus on being efficient for the most common cases. Neo and Trinity will use this all the time, and if it takes too long to
+enter something, they are more likely to forget to enter it at all.
+The most common cases are:
+1. Neo or Trinity paid for a joint expense
+2. The joint card paid for a personal expense of Neo's or Trinity's
+3. Entering expenses retroactively (i.e. days or even weeks after they happened) is pretty common
+4. Expenses are entered in BZD
+For these cases, use KLM (discussed at the end of the Efficiency lecture) to reduce the number of keystrokes needed, and eliminate homing
+between keyboard and mouse as much as possible. It should be possible to add a common type of expense without using the mouse at all,
+and without more than five keystrokes (if that) to select payer and payee. You don't need to include your KLM analysis anywhere, this is to
+help you make better design decisions.
+3/6
+https://doit.ub.edu.bz/mod/assign/view.php?id=6245
+9/5/26, 10:27 PM
+CMPS3141: Asignment 3 - AS3 - CSS & App Implementation
+While efficiency is the focus of this exercise, learnability and safety still matter. It is acceptable to make some tradeoffs between
+learnability and efficiency (since this is an app for specific users, built for their needs), but the interface cannot be entirely obscure. For
+example, a UI where payer and payee is selected through pressing A-J for each of the 9 combinations may reduce selecting this info to a
+single keystroke, but it is not an acceptable tradeoff, as it sacrifices too much learnability, and is not memorable as it relies entirely on
+knowledge in the head.
+While common cases are most important and the UI should be designed to optimize them, uncommon cases should still be possible to enter,
+with reasonable efficiency. Uncommon cases you must support include the following:
+1. Trinity and Neo went traveling. Some of their expenses are now in a different currency, however the total amounts owed still need to
+be in BZD(the skeleton includes a rudimentary currencyConvert(from, to, amount) function for you — since this is a prototype
+it's ok to only support BZD, MXN and GTQ currencies).
+2. For some expenses, Trinity and Neo both paid unequal amounts. These expenses might be joint expenses, or they might be expenses
+for just one person.
+3. Some expenses don't change the amount of money one person owes the other. For example, Trinity and Neo might have split a joint
+expense equally, or Trinity might have paid for an expense for herself. However, they still might want to record this expense in the
+app for bookkeeping purposes so they know how much money they spent.
+The design challenge you need to solve is how to 
+accommodate these uncommon cases, while keeping the common cases as efficient as
+possible. If you think of additional interesting uncommon cases, you may earn some bonus points, but you won't lose for supporting only
+these.
+Focus on the expense entering and editing UI and really think creatively about optimizing that, not on analytics, so don’t worry about charts
+and other summary information (though of course you’re welcome to work on that as well, after you’re done, as extra credit)
+The app should be fully functional, including storage.
+You will be implementing this as a 
+VueJS app, using the 
+MaVue helpers if you want, or react. The skeleton repo includes an app that reads
+and saves to GitHub, as well as the data from the spreadsheet in JSON format, though you need to modify the URL to that of your own repo
+so you can save.
+👉 🏼
+Your app in the expenses/ directory of the starter repo. Since this is a design task, depending on your design, you may need to
+modify index.js. If you do, don’t hesitate to reach out to ask about what JS would implement what you need to do. I am not grading you
+on how you write JS, only on the interface you design

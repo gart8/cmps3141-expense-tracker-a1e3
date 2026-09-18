@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Record Transaction | Household Ledger</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <script src="https://unpkg.com/lucide@0.468.0"></script>
+    <script type="module" src="index.js"></script>
+</head>
+<body style="--pico-spacing: 0.75rem; --pico-block-spacing-vertical: 0.75rem; --pico-form-element-spacing-vertical: 0.55rem;">
+
+<div id="app">
+    <header class="container">
+        <nav>
+            <ul>
+                <li><details class="dropdown">
+                    <summary aria-label="Open menu" data-tooltip="Open menu"><i data-lucide="menu" aria-hidden="true"></i></summary>
+                    <ul>
+                        <li><a href="index.html">Dashboard</a></li>
+                        <li><a href="record-transaction.html">Record transaction</a></li>
+                        <li><a href="transactions.html">History</a></li>
+                        <li><a href="record-settlement.html">Settlement</a></li>
+                        <li><a href="#settings">Settings</a></li>
+                        <li><a href="#help">Help</a></li>
+                    </ul>
+                </details></li>
+                <li><a href="index.html"><strong><i data-lucide="wallet-cards" aria-hidden="true"></i> Household Ledger</strong></a></li>
+            </ul>
+            <ul>
+                <li><a href="index.html">Dashboard</a></li>
+                <li><a href="record-transaction.html" aria-current="page">Transactions</a></li>
+                <li><a href="transactions.html">History</a></li>
+                <li><a href="#profile">Account</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <p><mark>Transactions</mark></p>
+        <h1>{{ editId ? 'Edit transaction' : 'Record a transaction' }}</h1>
+        <p>{{ editId ? 'Update the saved payment.' : 'Record the payment and add sharing details when needed.' }}</p>
+
+        <nav aria-label="Transaction entry progress">
+            <ol>
+                <li :aria-current="currentStep === 1 ? 'step' : null"><strong>1. Payment</strong></li>
+                <li :aria-current="currentStep === 2 ? 'step' : null"><strong>2. Sharing</strong> <small>(optional)</small></li>
+            </ol>
+        </nav>
+
+        <article>
+            <form @submit.prevent="recordTransaction" @keydown.ctrl.enter.prevent="handleShortcut">
+                <fieldset v-if="currentStep === 1">
+                    <legend><i data-lucide="receipt" aria-hidden="true"></i> Payment details</legend>
+                    <label for="description">Description <small>(optional)</small>
+                        <input id="description" type="text" v-model="description" placeholder="What was this for? e.g. groceries at Brodies">
+                    </label>
+                    <div class="grid">
+                        <label for="amount">Total amount <small>(required)</small>
+                            <input id="amount" type="number" min="0.01" step="0.01" v-model="amount" @input="syncSinglePayerAmount" required inputmode="decimal" placeholder="0.00" :aria-invalid="Boolean(amountError)">
+                            <small v-if="amountError" role="alert">{{ amountError }}</small>
+                        </label>
+                        <label for="currency">Currency used to pay
+                            <select id="currency" v-model="currency" required :aria-invalid="Boolean(currencyError)">
+                                <option value="BZD">BZD - Belize dollar</option>
+                                <option value="MXN">MXN - Mexican peso</option>
+                                <option value="GTQ">GTQ - Guatemalan quetzal</option>
+                                <option value="USD">USD - US dollar</option>
+                            </select>
+                            <small v-if="currencyError" role="alert">{{ currencyError }}</small>
+                        </label>
+                    </div>
+                    <div class="grid">
+                        <label v-if="currency !== 'BZD'" for="exchange-rate">Exchange rate to BZD
+                            <small>How many BZD is 1 {{ currency }}?</small>
+                            <input id="exchange-rate" type="number" min="0.000001" step="0.000001" v-model="exchangeRate" required inputmode="decimal" placeholder="e.g. 0.12" :aria-invalid="Boolean(exchangeRateError)">
+                            <small v-if="exchangeRateError" role="alert">{{ exchangeRateError }}</small>
+                        </label>
+                        <label for="date">Date
+                            <input id="date" type="date" v-model="date" required :aria-invalid="Boolean(dateError)">
+                            <small v-if="dateError" role="alert">{{ dateError }}</small>
+                        </label>
+                        <label for="category">Category <small>(optional)</small>
+                            <select id="category" v-model="category">
+                                <option value="">Choose a category</option>
+                                <option value="Groceries">Groceries</option>
+                                <option value="Utilities">Utilities</option>
+                                <option value="Rent or housing">Rent or housing</option>
+                                <option value="Household">Household</option>
+                                <option value="Transportation">Transportation</option>
+                                <option value="Food or dining">Food or dining</option>
+                                <option value="Health">Health</option>
+                                <option value="Entertainment">Entertainment</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </label>
+                    </div>
+                </fieldset>
+
+                <hr>
+
+                <fieldset v-if="currentStep === 1">
+                    <legend><i data-lucide="wallet-cards" aria-hidden="true"></i> Who paid? <small>(required)</small></legend>
+                    <div v-for="(payer, index) in payers" class="grid">
+                        <label :for="'payer-name-' + index">Person or account
+                            <input :id="'payer-name-' + index" type="text" list="payer-options" v-model="payer.name" placeholder="Choose or type" required :aria-invalid="Boolean(payerNameError(payer))">
+                            <small v-if="payerNameError(payer)" role="alert">{{ payerNameError(payer) }}</small>
+                        </label>
+                        <label :for="'payer-amount-' + index">Amount paid
+                            <input :id="'payer-amount-' + index" type="number" min="0.01" step="0.01" v-model="payer.amount" required inputmode="decimal" placeholder="0.00" :aria-invalid="Boolean(payerAmountError(payer))">
+                            <small v-if="payerAmountError(payer)" role="alert">{{ payerAmountError(payer) }}</small>
+                        </label>
+                        <button v-if="payers.length > 1" type="button" class="secondary" @click="removePayer(index)" :aria-label="'Remove payer ' + (index + 1)" data-tooltip="Remove payer"><i data-lucide="trash-2" aria-hidden="true"></i> Remove</button>
+                    </div>
+                    <footer>
+                        <progress :value="payerProgress" max="100" aria-label="Payer amount completion"></progress>
+                        <dl class="grid">
+                            <div><dt>Paid so far</dt><dd><output for="amount">{{ currency }} {{ payerTotal.toFixed(2) }}</output></dd></div>
+                            <div><dt>Remaining</dt><dd><output for="amount" :aria-invalid="!payerTotalsValid">{{ currency }} {{ Math.abs(payerRemaining).toFixed(2) }}</output></dd></div>
+                        </dl>
+                        <small v-if="payerTotalError" role="alert">{{ payerTotalError }}</small>
+                        <button type="button" class="outline" @click="addPayer"><i data-lucide="user-plus" aria-hidden="true"></i> Add another payer</button>
+                    </footer>
+                </fieldset>
+
+                <datalist id="payer-options"><option v-for="suggestion in personSuggestions" :value="suggestion"></option></datalist>
+
+                <hr>
+
+                <fieldset v-if="currentStep === 1">
+                    <legend><i data-lucide="users-round" aria-hidden="true"></i> Expense sharing</legend>
+                    <div class="grid">
+                        <div>
+                            <label><input type="radio" value="none" v-model="sharingMode" @change="disableSharing"> No sharing</label>
+                            <small>Personal expense</small>
+                        </div>
+                        <div>
+                            <label><input type="radio" value="shared" v-model="sharingMode" @change="enableSharing"> Shared expense</label>
+                            <small>Split this expense</small>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <details v-if="currentStep === 2 && sharingMode === 'shared'" open>
+                    <summary><i data-lucide="sliders-horizontal" aria-hidden="true"></i> Sharing details</summary>
+                    <fieldset>
+                        <legend>Who was this expense for?</legend>
+                        <div class="grid" style="grid-template-columns: 1fr auto;">
+                            <div>
+                                <label><input type="radio" value="equal" v-model="allocationMode"> Divide equally</label>
+                                <small>Even shares</small>
+                            </div>
+                            <div>
+                                <label><input type="radio" value="custom" v-model="allocationMode"> Set custom shares</label>
+                                <small>Different amounts</small>
+                            </div>
+                        </div>
+                        <div v-for="(participant, index) in participants" class="grid">
+                            <label :for="'participant-name-' + index">Person or group
+                                <input :id="'participant-name-' + index" type="text" list="participant-options" v-model="participant.name" placeholder="Choose or type">
+                            </label>
+                            <label v-if="allocationMode === 'custom'" :for="'participant-share-' + index">Share amount
+                                <input :id="'participant-share-' + index" type="number" min="0" step="0.01" v-model="participant.share" inputmode="decimal" placeholder="0.00">
+                            </label>
+                            <button v-if="participants.length > 1" type="button" class="secondary" @click="removeParticipant(index)" :aria-label="'Remove participant ' + (index + 1)" data-tooltip="Remove participant"><i data-lucide="trash-2" aria-hidden="true"></i> Remove</button>
+                        </div>
+                        <progress :value="allocationProgress" max="100" aria-label="Expense allocation completion"></progress>
+                        <dl class="grid">
+                            <div><dt>Allocated</dt><dd><output for="amount">{{ currency }} {{ allocationTotal.toFixed(2) }}</output></dd></div>
+                            <div><dt>Unallocated</dt><dd><output for="amount" :aria-invalid="!allocationTotalsValid">{{ currency }} {{ Math.abs(allocationRemaining).toFixed(2) }}</output></dd></div>
+                        </dl>
+                        <button type="button" class="outline" @click="addParticipant"><i data-lucide="user-plus" aria-hidden="true"></i> Add another participant</button>
+                    </fieldset>
+                    <label for="notes">Notes <small>(optional)</small>
+                        <textarea id="notes" v-model="notes" placeholder="Anything useful for later allocation"></textarea>
+                    </label>
+                </details>
+
+                <datalist id="participant-options"><option v-for="suggestion in personSuggestions" :value="suggestion"></option></datalist>
+
+                <hr>
+
+                <div v-if="currentStep === 1 && sharingMode === 'shared'" class="grid">
+                    <button type="button" @click="continueToSharing"><i data-lucide="arrow-right" aria-hidden="true"></i> Continue to sharing</button>
+                    <button type="button" class="secondary" @click="saveSharedForLater"><i data-lucide="bookmark" aria-hidden="true"></i> Save sharing for later</button>
+                </div>
+                <div v-if="currentStep === 1 && sharingMode === 'none'" class="grid" style="grid-template-columns: 1fr 1fr 1fr; align-items: center;">
+                    <button type="submit" style="grid-column: 1 / -1;"><i data-lucide="save" aria-hidden="true"></i> {{ editId ? 'Update transaction' : 'Save transaction' }}</button>
+                </div>
+                <div v-if="currentStep === 2" class="grid" style="grid-template-columns: 1fr 1fr; align-items: center;">
+                    <button type="button" class="secondary" @click="backToPayment"><i data-lucide="arrow-left" aria-hidden="true"></i> Back to payment</button>
+                    <button type="submit"><i data-lucide="save" aria-hidden="true"></i> {{ editId ? 'Update transaction' : 'Save transaction' }}</button>
+                </div>
+                <div style="text-align: right;">
+                    <a href="#" @click.prevent="clearForm" data-tooltip="Clear form" aria-label="Clear form"><i data-lucide="eraser" aria-hidden="true"></i> Clear form</a>
+                </div>
+                <p v-if="message" role="status"><i data-lucide="check-circle-2" aria-hidden="true"></i> {{ message }}</p>
+                <p v-if="error" role="alert">Please check the highlighted fields.</p>
+            </form>
+        </article>
+
+        <article aria-labelledby="recent-heading">
+            <header>
+                <h2 id="recent-heading"><i data-lucide="clock-3" aria-hidden="true"></i> Recently recorded</h2>
+            </header>
+            <p v-if="transactions.length === 0"><i data-lucide="inbox" aria-hidden="true"></i> No transactions recorded in this browser yet.</p>
+            <div v-else>
+                <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+                    <article v-for="transaction in transactions">
+                    <header>
+                        <div class="grid" style="grid-template-columns: 1fr auto;">
+                            <div>
+                                <strong>{{ transaction.description || "Unlabeled transaction" }}</strong>
+                                <br>
+                                <time :datetime="transaction.date"><small>{{ transaction.date }}</small></time>
+                            </div>
+                            <span>
+                                <a href="#" @click.prevent="deleteTransaction(transaction)" data-tooltip="Remove transaction" aria-label="Remove transaction">
+                                    <i data-lucide="trash-2" aria-hidden="true"></i>
+                                </a>
+                            </span>
+                        </div>
+                    </header>
+                    <div class="grid" style="grid-template-columns: 1fr 1fr;">
+                        <div>
+                            <small>Amount</small>
+                            <br>
+                            <strong>{{ formatAmount(transaction) }}</strong>
+                            <template v-if="convertedSummary(transaction)">
+                                <br>
+                                <small>Converted total</small>
+                                <br>
+                                <strong>{{ convertedSummary(transaction) }}</strong>
+                            </template>
+                        </div>
+                        <div>
+                            <small>Paid by</small>
+                            <br>
+                            <small>{{ payerSummary(transaction) }}</small>
+                        </div>
+                    </div>
+                    <footer>
+                        <small>{{ sharingSummary(transaction) }}</small>
+                    </footer>
+                    </article>
+                </div>
+            </div>
+        </article>
+    </main>
+</div>
+
+<script>if (window.lucide) window.lucide.createIcons();</script>
+<script src="ui.js"></script>
+</body>
+</html>

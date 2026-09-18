@@ -1,0 +1,25 @@
+{
+  "name": "cmps3141-expense-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "node --check index.js && node --check dashboard.js && node --check transactions.js && node --check record-settlement.js && node --check ui.js"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "externalDependencies": {
+    "pico.css": {
+      "source": "https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css",
+      "usage": "Mobile-first semantic HTML and form styling"
+    },
+    "lucide": {
+      "source": "https://unpkg.com/lucide@0.468.0",
+      "usage": "Interface icons loaded by the transaction page"
+    },
+    "mavue": {
+      "source": "https://mavue.mavo.io/mavue.js",
+      "usage": "Loaded directly in the browser by the app pages"
+    }
+  }
+}

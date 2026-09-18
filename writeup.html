@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usability Notes | Household Expense Tracker</title>
+
+    <style>
+        .container {
+            width: 40%;
+            min-width: 320px;
+            margin: 0 auto;
+        }
+        .section {
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .logo {
+            width: 84px;
+            height: 84px;
+            border: 2px solid black;
+            flex-shrink: 0;
+        }
+        .problem-list,
+        .solution-list {
+            padding-left: 24px;
+        }
+        .problem-list li,
+        .solution-list li {
+            margin-bottom: 20px;
+        }
+        .dimension {
+            margin: 6px 0;
+        }
+        .solution-list ul {
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    
+
+    <main>
+        <section class="section">
+            <h2>Task 1: Usability Problems with the Current Spreadsheet Method</h2>
+            <h3>Most Important Usability Dimension: Efficiency</h3>
+            <p>
+                Managing shared expenses requires quick updates, automatic calculations,
+                and easy balance checks. The spreadsheet slows users down and forces
+                manual work, so efficiency is the most important usability dimension.
+            </p>
+        </section>
+
+        <section class="section">
+            <h2>Usability Problems Identified</h2>
+            <ol class="problem-list">
+                <li>
+                    <strong>Manual calculations</strong>
+                    <p class="dimension"><strong>Dimension:</strong> Efficiency</p>
+                    <p>The spreadsheet does not calculate splits, totals, or balances. Users must do mental math, which slows them down and increases cognitive load.</p>
+                </li>
+                <li>
+                    <strong>Formulas are easy to break</strong>
+                </li>
+                <li>
+                    <strong>Hard to understand</strong>
+                    <p class="dimension"><strong>Dimension:</strong> Learnability</p>
+                    <p>Columns are unclear, formulas are hidden, and there is no visual grouping. New users must guess how the sheet works.</p>
+                </li>
+                <li>
+                    <strong>Personal and shared expenses are mixed</strong>
+                    <p class="dimension"><strong>Dimension:</strong> Learnability and Efficiency</p>
+                    <p>Neo's, Trinity's, and shared expenses appear in the same table. Users must mentally track which is which, causing confusion and slowing them down.</p>
+                </li>
+                <li>
+                    <strong>No clear running balance</strong>
+                    <p class="dimension"><strong>Dimension:</strong> Efficiency</p>
+                    <p>Users cannot easily see who owes whom, how much, or why the balance changed. They must scroll and interpret rows manually.</p>
+                </li>
+                <li>
+                    <strong>No search, filter, or sort</strong>
+                    <p class="dimension"><strong>Dimension:</strong> Efficiency</p>
+                    <p>Users cannot quickly find or organize expenses. Everything requires manual scanning.</p>
+                </li>
+                <li>
+                    <strong>Becomes cluttered as more rows are added</strong>
+                    <p class="dimension"><strong>Dimension:</strong> Efficiency</p>
+                    <p>Large spreadsheets become dense and hard to read. Scrolling increases and readability decreases.</p>
+                </li>
+                <li>
+                    <strong>No error prevention</strong>
+                    <p class="dimension"><strong>Dimension:</strong> Safety</p>
+                    <p>The sheet allows invalid inputs such as negative values, mismatched totals, and wrong percentages. Errors are easy to make and hard to detect.</p>
+                </li>
+                <li>
+                    <strong>Excessive scrolling</strong>
+                    <p class="dimension"><strong>Dimension:</strong> Efficiency</p>
+                    <p>Users scroll to add entries, check balances, and view wide columns. This slows down the workflow.</p>
+                </li>
+                <li>
+                    <strong>No visual hierarchy</strong>
+                    <p class="dimension"><strong>Dimension:</strong> Learnability</p>
+                    <p>Everything appears in one flat grid with no sections or summaries. Users struggle to understand the structure.</p>
+                </li>
+                <li>
+                    <strong>No separation of input and output</strong>
+                    <p class="dimension"><strong>Dimension:</strong> Safety and Learnability</p>
+                    <p>Users cannot tell which cells they should edit and which contain formulas. This leads to accidental overwriting.</p>
+                </li>
+                <li>
+                    <strong>Cognitive overload</strong>
+                    <p class="dimension"><strong>Dimension:</strong> Learnability</p>
+                    <p>Too many raw numbers and formulas create mental strain. There is no simplification or guidance.</p>
+                </li>
+            </ol>
+        </section>
+
+        <section class="section">
+            <h2>How the App Fixes the Spreadsheet Usability Problems</h2>
+            <ol class="solution-list">
+                <li>
+                    <strong>Removes manual calculations</strong>
+                    <ul>
+                        <li>Clear input fields for splits and payments</li>
+                        <li>Future automation built into the layout</li>
+                    </ul>
+                    <p><strong>Fixes:</strong> Efficiency</p>
+                </li>
+                <li>
+                    <strong>Prevents breaking formulas</strong>
+                    <ul>
+                        <li>Users only enter data into safe form fields</li>
+                        <li>No exposed formulas to overwrite</li>
+                    </ul>
+                    <p><strong>Fixes:</strong> Safety</p>
+                </li>
+                <li>
+                    <strong>Easier to understand</strong>
+                    <ul>
+                        <li>Sections for each part of the expense</li>
+                        <li>Labels, headers, and spacing</li>
+                        <li>Guided workflow</li>
+                    </ul>
+                    <p><strong>Fixes:</strong> Learnability</p>
+                </li>
+                <li>
+                    <strong>Separates personal and shared expenses</strong>
+                    <ul>
+                        <li>Radio buttons for Neo, Trinity, Shared, and Custom</li>
+                        <li>No mixing in one table</li>
+                    </ul>
+                    <p><strong>Fixes:</strong> Learnability and Efficiency</p>
+                </li>
+                <li>
+                    <strong>Shows running balances clearly</strong>
+                    <ul>
+                        <li>Dashboard summary</li>
+                        <li>Recent transactions list</li>
+                    </ul>
+                    <p><strong>Fixes:</strong> Efficiency</p>
+                </li>
+                <li>
+                    <strong>Adds search, filter, and sort controls</strong>
+                    <ul>
+                        <li>Dedicated controls on the Transactions page</li>
+                        <li>Supports fast lookup and organization</li>
+                    </ul>
+                    <p><strong>Fixes:</strong> Efficiency</p>
+                </li>
+                <li>
+                    <strong>Provides a cleaner layout that scales</strong>
+                    <ul>
+                        <li>40% centered container</li>
+                        <li>Section spacing</li>
+                        <li>Organized pages</li>
+                    </ul>
+                    <p><strong>Fixes:</strong> Efficiency</p>
+                </li>
+                <li>
+                    <strong>Reduces input errors</strong>
+                    <ul>
+                        <li>Number fields, radio buttons, and dropdowns</li>
+                        <li>Clear separation of required and optional fields</li>
+                    </ul>
+                    <p><strong>Fixes:</strong> Safety</p>
+                </li>
+                <li>
+                    <strong>Reduces scrolling</strong>
+                    <ul>
+                        <li>Separate pages for Dashboard, Add Expense, and Transactions</li>
+                        <li>Logical flow instead of one long sheet</li>
+                    </ul>
+                    <p><strong>Fixes:</strong> Efficiency</p>
+                </li>
+                <li>
+                    <strong>Adds visual hierarchy</strong>
+                    <ul>
+                        <li>Logo and title header</li>
+                        <li>Menu bar</li>
+                        <li>Section headers</li>
+                        <li>Quick Actions</li>
+                    </ul>
+                    <p><strong>Fixes:</strong> Learnability</p>
+                </li>
+                <li>
+                    <strong>Separates input from output</strong>
+                    <ul>
+                        <li>Add Expense page for input</li>
+                        <li>Dashboard and Transactions pages for output</li>
+                    </ul>
+                    <p><strong>Fixes:</strong> Safety and Learnability</p>
+                </li>
+                <li>
+                    <strong>Reduces cognitive overload</strong>
+                    <ul>
+                        <li>Simple layout</li>
+                        <li>Clear grouping</li>
+                        <li>Only relevant information per page</li>
+                    </ul>
+                    <p><strong>Fixes:</strong> Learnability</p>
+                </li>
+            </ol>
+        </section>
+    </main>
+
+    <footer class="section">
+        <hr>
+        <p>&copy; 2026 Household Expense Tracker</p>
+    </footer>
+
+</div>
+
+</body>
+</html>
