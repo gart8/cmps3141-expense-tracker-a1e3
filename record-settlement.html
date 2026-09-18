@@ -3,37 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Record Settlement | Household Ledger</title>
+    <title>Pay Someone Back | Dalla Tab</title>
+    <link rel="icon" href="assets/dalla-tab-mark.svg" type="image/svg+xml">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
     <script src="https://unpkg.com/lucide@0.468.0"></script>
-    <script type="module" src="record-settlement.js"></script>
+    <script type="module" src="js/record-settlement.js"></script>
 </head>
-<body style="--pico-spacing: 0.75rem; --pico-block-spacing-vertical: 0.75rem; --pico-form-element-spacing-vertical: 0.55rem;">
+<body style="--pico-spacing: 0.7rem; --pico-block-spacing-vertical: 0.6rem; --pico-typography-spacing-vertical: 0.6rem; --pico-form-element-spacing-vertical: 0.55rem; --pico-nav-element-spacing-vertical: 0.5rem;">
 <div id="app">
     <header class="container">
         <nav>
             <ul>
-                <li><details class="dropdown"><summary aria-label="Open menu" data-tooltip="Open menu"><i data-lucide="menu" aria-hidden="true"></i></summary><ul><li><a href="index.html">Dashboard</a></li><li><a href="record-transaction.html">Record transaction</a></li><li><a href="transactions.html">History</a></li><li><a href="record-settlement.html">Settlement</a></li></ul></details></li>
-                <li><a href="index.html"><strong><i data-lucide="wallet-cards" aria-hidden="true"></i> Household Ledger</strong></a></li>
-            </ul>
-            <ul>
-                <li><a href="index.html">Dashboard</a></li>
-                <li><a href="record-transaction.html">Transactions</a></li>
-                <li><a href="transactions.html">History</a></li>
-                <li><a href="record-settlement.html" aria-current="page">Settlement</a></li>
+                <li><details class="dropdown"><summary aria-label="Open menu"><i data-lucide="menu" aria-hidden="true"></i></summary><ul><li><a href="index.html">Dashboard</a></li><li><a href="record-transaction.html">Record payment</a></li><li><a href="transactions.html">Payment history</a></li><li><a href="record-settlement.html">Pay someone back</a></li></ul></details></li>
+                <li><a href="index.html"><strong><img src="assets/dalla-tab-mark.svg" width="32" height="32" alt=""> Dalla Tab</strong></a></li>
             </ul>
         </nav>
     </header>
 
     <main class="container">
-        <p><mark>Settlement</mark></p>
-        <h1>Record a settlement</h1>
+        <p><mark>Payback</mark></p>
+        <h1>Pay someone back</h1>
         <p>Record money paid back between people or accounts.</p>
 
         <article>
             <form @submit.prevent="recordSettlement">
                 <fieldset>
-                    <legend><i data-lucide="arrow-left-right" aria-hidden="true"></i> Settlement details</legend>
+                    <legend><i data-lucide="arrow-left-right" aria-hidden="true"></i> Payback details</legend>
                     <div class="grid">
                         <label for="paid-by">Paid by
                             <input id="paid-by" type="text" list="people" v-model="paidBy" required placeholder="Choose or type">
@@ -56,7 +51,7 @@
                 </fieldset>
                 <datalist id="people"><option v-for="person in people" :value="person"></option></datalist>
                 <div class="grid">
-                    <button type="submit"><i data-lucide="check" aria-hidden="true"></i> Record settlement</button>
+                    <button type="submit"><i data-lucide="check" aria-hidden="true"></i> Record payback</button>
                     <button type="button" class="secondary" @click="clearForm"><i data-lucide="eraser" aria-hidden="true"></i> Clear</button>
                 </div>
                 <p v-if="message" role="status"><i data-lucide="check-circle-2" aria-hidden="true"></i> {{ message }}</p>
@@ -66,6 +61,6 @@
     </main>
 </div>
 <script>if (window.lucide) window.lucide.createIcons();</script>
-<script src="ui.js"></script>
+<script src="js/ui.js"></script>
 </body>
 </html>

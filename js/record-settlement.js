@@ -73,7 +73,7 @@ createApp({
       this.amount = "";
       this.paidBy = "";
       this.paidTo = "";
-      this.message = "Settlement recorded.";
+      this.message = "Payback recorded.";
     },
 
     clearForm() {

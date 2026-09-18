@@ -4,13 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Expense</title>
+    <link rel="icon" href="assets/dalla-tab-mark.svg" type="image/svg+xml">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
     <script src="https://unpkg.com/lucide@0.468.0"></script>
     <script type="module" src="https://mavue.mavo.io/mavue.js"></script>
 
 </head>
-<body style="--pico-spacing: 0.75rem; --pico-block-spacing-vertical: 0.75rem; --pico-form-element-spacing-vertical: 0.55rem;">
+<body style="--pico-spacing: 0.7rem; --pico-block-spacing-vertical: 0.6rem; --pico-typography-spacing-vertical: 0.6rem; --pico-form-element-spacing-vertical: 0.55rem; --pico-nav-element-spacing-vertical: 0.5rem;">
 
 <v-app
     id="app"
@@ -31,15 +32,9 @@
 
     <header class="topbar">
         <div class="topbar-actions">
-            <details class="mobile-menu"><summary aria-label="Open navigation menu" data-tooltip="Open menu"><i data-lucide="menu" aria-hidden="true"></i></summary><nav aria-label="Mobile navigation"><a href="index.html">Dashboard</a><a href="record-transaction.html">Transactions</a><a href="transactions.html">History</a><a href="record-settlement.html">Settlement</a><a href="add-expense.html">Expense details</a></nav></details>
+            <details class="mobile-menu"><summary aria-label="Open navigation menu"><i data-lucide="menu" aria-hidden="true"></i></summary><nav aria-label="Mobile navigation"><a href="index.html">Dashboard</a><a href="record-transaction.html">Record payment</a><a href="transactions.html">Payment history</a><a href="record-settlement.html">Pay someone back</a><a href="add-expense.html">Extra details</a></nav></details>
         </div>
-        <a class="brand" href="index.html"><span class="brand-mark"><i data-lucide="wallet-cards"></i></span><span>Household Ledger</span></a>
-        <nav class="desktop-nav" aria-label="Primary navigation">
-            <a href="index.html">Dashboard</a>
-            <a href="record-transaction.html">Transactions</a>
-            <a href="transactions.html">History</a>
-            <a class="active" href="add-expense.html">Expense details</a>
-        </nav>
+        <a class="brand" href="index.html"><span class="brand-mark"><img src="assets/dalla-tab-mark.svg" width="32" height="32" alt=""></span><span>Dalla Tab</span></a>
         <div class="topbar-actions"><a class="account-link" href="#profile"><span class="avatar">A</span><span class="account-name">Account</span></a></div>
     </header>
 
@@ -120,7 +115,7 @@
 </v-app>
 
 <script>if (window.lucide) window.lucide.createIcons();</script>
-<script src="ui.js"></script>
+<script src="js/ui.js"></script>
 
 </body>
 </html>

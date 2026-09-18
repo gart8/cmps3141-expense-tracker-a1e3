@@ -1,10 +1,10 @@
 {
-  "name": "cmps3141-expense-tracker",
+  "name": "dalla-tab",
   "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "check": "node --check index.js && node --check dashboard.js && node --check transactions.js && node --check record-settlement.js && node --check ui.js"
+    "check": "node --check js/index.js && node --check js/dashboard.js && node --check js/transactions.js && node --check js/record-settlement.js && node --check js/ui.js"
   },
   "dependencies": {},
   "devDependencies": {},

@@ -3,46 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard | Household Ledger</title>
+    <title>Dashboard | Dalla Tab</title>
+    <link rel="icon" href="assets/dalla-tab-mark.svg" type="image/svg+xml">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
     <script src="https://unpkg.com/lucide@0.468.0"></script>
-    <script type="module" src="dashboard.js"></script>
+    <script type="module" src="js/dashboard.js"></script>
 </head>
-<body style="--pico-spacing: 0.75rem; --pico-block-spacing-vertical: 0.75rem; --pico-form-element-spacing-vertical: 0.55rem;">
+<body style="--pico-spacing: 0.7rem; --pico-block-spacing-vertical: 0.6rem; --pico-typography-spacing-vertical: 0.6rem; --pico-form-element-spacing-vertical: 0.55rem; --pico-nav-element-spacing-vertical: 0.5rem;">
 
 <div id="app">
     <header class="container">
         <nav>
             <ul>
                 <li><details class="dropdown">
-                    <summary aria-label="Open menu" data-tooltip="Open menu"><i data-lucide="menu" aria-hidden="true"></i></summary>
+                    <summary aria-label="Open menu"><i data-lucide="menu" aria-hidden="true"></i></summary>
                     <ul>
                         <li><a href="index.html">Dashboard</a></li>
-                        <li><a href="record-transaction.html">Record transaction</a></li>
-                        <li><a href="transactions.html">History</a></li>
-                        <li><a href="record-settlement.html">Settlement</a></li>
+                        <li><a href="record-transaction.html">Record payment</a></li>
+                        <li><a href="transactions.html">Payment history</a></li>
+                        <li><a href="record-settlement.html">Pay someone back</a></li>
                         <li><a href="#settings">Settings</a></li>
                         <li><a href="#help">Help</a></li>
                     </ul>
                 </details></li>
-                <li><strong><i data-lucide="wallet-cards" aria-hidden="true"></i> Household Ledger</strong></li>
+                <li><strong><img src="assets/dalla-tab-mark.svg" width="32" height="32" alt=""> Dalla Tab</strong></li>
             </ul>
-            <ul>
-                <li><a href="index.html" aria-current="page">Dashboard</a></li>
-                <li><a href="record-transaction.html">Transactions</a></li>
-                <li><a href="transactions.html">History</a></li>
-                <li><a href="record-settlement.html">Settlement</a></li>
-                <li><a href="#profile" aria-label="Account">Account</a></li>
-            </ul>
+            <ul><li><a href="#profile" aria-label="Account">Account</a></li></ul>
         </nav>
     </header>
 
     <main class="container">
         <section>
             <p><mark>Overview</mark></p>
-            <h1>Your ledger at a glance</h1>
+            <h1>Your money at a glance</h1>
             <p>See the latest activity and current balances in one place.</p>
-            <a href="record-transaction.html" role="button"><i data-lucide="plus" aria-hidden="true"></i> Record transaction</a>
+            <a href="record-transaction.html" role="button"><i data-lucide="plus" aria-hidden="true"></i> Record payment</a>
         </section>
 
         <section>
@@ -60,17 +55,34 @@
                 <h2 id="balance-heading">Balances</h2>
             </header>
             <div class="grid">
-                <article>
+                <article style="--pico-block-spacing-horizontal: 1.25rem;">
                     <header><i data-lucide="arrow-left-right" aria-hidden="true"></i> Personal balance</header>
                     <h3>Calculated positions</h3>
-                    <strong v-for="balance in balanceRows.slice(0, 2)">{{ balance.name }} {{ balance.label }} {{ balance.amount }}</strong>
-                    <small v-if="!balanceRows.length">No allocated balances yet</small>
+                    <div v-if="balanceRows.length">
+                        <div v-for="balance in balanceRows.slice(0, 2)" class="grid" style="grid-template-columns: 1fr auto;">
+                            <span>{{ balance.name }} {{ balance.label }}</span>
+                            <strong>{{ balance.amount }}</strong>
+                        </div>
+                        <hr>
+                        <small><i data-lucide="check-circle-2" aria-hidden="true"></i> All balances calculated</small>
+                    </div>
+                    <small v-else>No allocated balances yet</small>
                 </article>
-                <article>
-                    <header><i data-lucide="clipboard-list" aria-hidden="true"></i> Ledger status</header>
-                    <strong>{{ transactionCount }} recorded</strong>
-                    <small>{{ personalTransactionCount }} personal · {{ sharedTransactionCount }} shared</small>
-                    <small v-if="pendingSharingCount">{{ pendingSharingCount }} shared payment<span v-if="pendingSharingCount !== 1">s</span> pending details</small>
+                <article style="--pico-block-spacing-horizontal: 1.25rem;">
+                    <header><i data-lucide="clipboard-list" aria-hidden="true"></i> Your activity</header>
+                    <div class="grid" style="grid-template-columns: 1fr auto;">
+                        <span>Total payments</span>
+                        <strong>{{ transactionCount }}</strong>
+                        <span>Personal payments</span>
+                        <strong>{{ personalTransactionCount }}</strong>
+                        <span>Shared payments</span>
+                        <strong>{{ sharedTransactionCount }}</strong>
+                        <span>Need sharing details</span>
+                        <strong>{{ pendingSharingCount }}</strong>
+                    </div>
+                    <hr>
+                    <small v-if="pendingSharingCount"><i data-lucide="alert-circle" aria-hidden="true"></i> Some shared payments need details</small>
+                    <small v-else><i data-lucide="check-circle-2" aria-hidden="true"></i> All shared payments are up to date</small>
                 </article>
             </div>
         </section>
@@ -78,24 +90,24 @@
         <section aria-labelledby="settlement-heading">
             <header>
                 <p><mark>Next step</mark></p>
-                <h2 id="settlement-heading">Suggested settlements</h2>
+                <h2 id="settlement-heading">Suggested paybacks</h2>
             </header>
-            <article>
-                <p v-if="!settlementSuggestions.length">No settlements needed from the current balances.</p>
+            <article style="--pico-block-spacing-horizontal: 1.25rem;">
+                <p v-if="!settlementSuggestions.length">No paybacks needed right now.</p>
                 <ul v-else>
                     <li v-for="suggestion in settlementSuggestions"><strong>{{ suggestion.from }}</strong> pays <strong>{{ suggestion.to }}</strong> {{ suggestion.amount }}</li>
                 </ul>
-                <footer><a href="record-settlement.html" role="button" class="secondary"><i data-lucide="arrow-left-right" aria-hidden="true"></i> Record settlement</a></footer>
+                <footer><a href="record-settlement.html" role="button" class="secondary"><i data-lucide="arrow-left-right" aria-hidden="true"></i> Record payback</a></footer>
             </article>
         </section>
 
         <section aria-labelledby="activity-heading">
             <header>
-                <p><mark>Ledger</mark></p>
-                <h2 id="activity-heading">Recent activity</h2>
-                <small>{{ transactionCount }} transaction<span v-if="transactionCount !== 1">s</span> · {{ formatBzd(totalBzd) }} recorded</small>
+                <p><mark>Recent</mark></p>
+                <h2 id="activity-heading">Recent payments</h2>
+                <small>{{ transactionCount }} payment<span v-if="transactionCount !== 1">s</span> · {{ formatBzd(totalBzd) }} recorded</small>
             </header>
-            <article>
+            <article style="--pico-block-spacing-horizontal: 1.25rem;">
                 <ul>
                     <li v-for="transaction in recentTransactions">
                         <i data-lucide="receipt" aria-hidden="true"></i>
@@ -103,24 +115,24 @@
                         <small>{{ transaction.detail }} · {{ transaction.date }}</small>
                     </li>
                 </ul>
-                <footer><a href="transactions.html">See transaction history</a></footer>
+                <footer><a href="transactions.html">See payment history</a></footer>
             </article>
         </section>
 
         <aside>
-            <strong><i data-lucide="zap" aria-hidden="true"></i> Keep the ledger current</strong>
-            <p v-if="transactionsWithoutAllocation">{{ transactionsWithoutAllocation }} transaction<span v-if="transactionsWithoutAllocation !== 1">s</span> still need<span v-if="transactionsWithoutAllocation === 1">s</span> sharing details.</p>
-            <p v-else>Record a payment while it is still fresh.</p>
+            <strong><i data-lucide="zap" aria-hidden="true"></i> Keep your tab up to date</strong>
+            <p v-if="transactionsWithoutAllocation">{{ transactionsWithoutAllocation }} shared payment<span v-if="transactionsWithoutAllocation !== 1">s</span> still need<span v-if="transactionsWithoutAllocation === 1">s</span> sharing details.</p>
+            <p v-else>Add a payment while it is still fresh.</p>
             <a href="record-transaction.html" role="button" class="secondary">Add payment</a>
         </aside>
     </main>
 
     <footer class="container">
-        <small>Household Ledger · Local prototype · 2026</small>
+        <small>Dalla Tab · Local prototype · 2026</small>
     </footer>
 </div>
 
 <script>if (window.lucide) window.lucide.createIcons();</script>
-<script src="ui.js"></script>
+<script src="js/ui.js"></script>
 </body>
 </html>

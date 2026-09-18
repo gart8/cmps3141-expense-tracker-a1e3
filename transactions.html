@@ -3,47 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transaction History | Household Ledger</title>
+    <title>Payment History | Dalla Tab</title>
+    <link rel="icon" href="assets/dalla-tab-mark.svg" type="image/svg+xml">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
     <script src="https://unpkg.com/lucide@0.468.0"></script>
-    <script type="module" src="transactions.js"></script>
+    <script type="module" src="js/transactions.js"></script>
 </head>
-<body style="--pico-spacing: 0.75rem; --pico-block-spacing-vertical: 0.75rem; --pico-form-element-spacing-vertical: 0.55rem;">
+<body style="--pico-spacing: 0.7rem; --pico-block-spacing-vertical: 0.6rem; --pico-typography-spacing-vertical: 0.6rem; --pico-form-element-spacing-vertical: 0.55rem; --pico-nav-element-spacing-vertical: 0.5rem;">
 
 <div id="app">
     <header class="container">
         <nav>
             <ul>
                 <li><details class="dropdown">
-                    <summary aria-label="Open menu" data-tooltip="Open menu"><i data-lucide="menu" aria-hidden="true"></i></summary>
+                    <summary aria-label="Open menu"><i data-lucide="menu" aria-hidden="true"></i></summary>
                     <ul>
                         <li><a href="index.html">Dashboard</a></li>
-                        <li><a href="record-transaction.html">Record transaction</a></li>
-                        <li><a href="transactions.html">History</a></li>
-                        <li><a href="record-settlement.html">Settlement</a></li>
+                        <li><a href="record-transaction.html">Record payment</a></li>
+                        <li><a href="transactions.html">Payment history</a></li>
+                        <li><a href="record-settlement.html">Pay someone back</a></li>
                         <li><a href="#settings">Settings</a></li>
                         <li><a href="#help">Help</a></li>
                     </ul>
                 </details></li>
-                <li><a href="index.html"><strong><i data-lucide="wallet-cards" aria-hidden="true"></i> Household Ledger</strong></a></li>
+                <li><a href="index.html"><strong><img src="assets/dalla-tab-mark.svg" width="32" height="32" alt=""> Dalla Tab</strong></a></li>
             </ul>
-            <ul>
-                <li><a href="index.html">Dashboard</a></li>
-                <li><a href="record-transaction.html">Transactions</a></li>
-                <li><a href="transactions.html" aria-current="page">History</a></li>
-                <li><a href="#profile">Account</a></li>
-            </ul>
+            <ul><li><a href="#profile">Account</a></li></ul>
         </nav>
     </header>
 
     <main class="container">
-        <p><mark>Ledger</mark></p>
-        <h1>Transaction history</h1>
+        <p><mark>Payments</mark></p>
+        <h1>Payment history</h1>
         <p>Find, review, and correct recorded payments.</p>
 
         <article>
             <header>
-                <h2><i data-lucide="list-filter" aria-hidden="true"></i> Find transactions</h2>
+                <h2><i data-lucide="list-filter" aria-hidden="true"></i> Find payments</h2>
             </header>
             <div class="grid">
                 <label for="search">Search
@@ -51,7 +47,7 @@
                 </label>
                 <label for="sharing-filter">Sharing status
                     <select id="sharing-filter" v-model="sharingFilter">
-                        <option value="all">All transactions</option>
+                        <option value="all">All payments</option>
                         <option value="none">No sharing needed</option>
                         <option value="shared">Sharing complete</option>
                         <option value="incomplete">Sharing details pending</option>
@@ -66,19 +62,13 @@
             </div>
         </article>
 
-        <p><strong>{{ filteredTransactions.length }}</strong> transaction<span v-if="filteredTransactions.length !== 1">s</span> shown</p>
+        <p><strong>{{ filteredTransactions.length }}</strong> payment<span v-if="filteredTransactions.length !== 1">s</span> shown</p>
 
-        <p v-if="filteredTransactions.length === 0">No matching transactions found.</p>
+        <p v-if="filteredTransactions.length === 0">No matching payments found.</p>
         <figure v-else>
             <table>
                 <thead>
-                    <tr>
-                        <th scope="col">Date</th>
-                        <th scope="col">Transaction</th>
-                        <th scope="col">Paid by</th>
-                        <th scope="col">Amount</th>
-                        <th scope="col">Sharing</th>
-                        <th scope="col">Actions</th>
+                    <ul><li><a href="#profile">Account</a></li></ul>
                     </tr>
                 </thead>
                 <tbody>
@@ -105,6 +95,6 @@
 </div>
 
 <script>if (window.lucide) window.lucide.createIcons();</script>
-<script src="ui.js"></script>
+<script src="js/ui.js"></script>
 </body>
 </html>

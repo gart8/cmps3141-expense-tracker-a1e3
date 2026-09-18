@@ -40,9 +40,9 @@ function transactionDetail(transaction) {
     return `Paid by ${payers || "Unknown"} · Personal expense`;
   }
   if (transaction.sharing?.status === "incomplete" || (!transaction.allocation && transaction.sharing?.required)) {
-    return `Paid by ${payers || "Unknown"} · Sharing details not added`;
+    return `Paid by ${payers || "Unknown"} · Shared payment — details needed`;
   }
-  return `Paid by ${payers || "Unknown"} · Sharing details added`;
+  return `Paid by ${payers || "Unknown"} · Shared payment`;
 }
 
 createApp({

@@ -44,7 +44,7 @@ createApp({
 
   methods: {
     transactionTitle(transaction) {
-      if (transaction.type === "settlement") return `Settlement: ${transaction.paidBy} to ${transaction.paidTo}`;
+      if (transaction.type === "settlement") return `Payback: ${transaction.paidBy} to ${transaction.paidTo}`;
       return transaction.description || "Unlabeled transaction";
     },
 
@@ -63,7 +63,7 @@ createApp({
     },
 
     sharingSummary(transaction) {
-      if (transaction.type === "settlement") return "Settlement recorded";
+      if (transaction.type === "settlement") return "Payback recorded";
       if (transaction.sharing?.status === "incomplete") return "Sharing details pending";
       if (transaction.allocation?.mode === "none") return "No sharing needed";
       if (transaction.allocation?.mode === "equal") return "Split equally";
