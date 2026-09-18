@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "check": "node --check js/index.js && node --check js/dashboard.js && node --check js/transactions.js && node --check js/record-settlement.js && node --check js/ui.js"
+    "start": "node server.js",
+    "check": "node --check server.js && node --check js/data-store.js && node --check js/index.js && node --check js/dashboard.js && node --check js/transactions.js && node --check js/record-settlement.js && node --check js/ui.js"
   },
   "dependencies": {},
   "devDependencies": {},

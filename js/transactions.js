@@ -1,23 +1,10 @@
 import { createApp } from "https://mavue.mavo.io/mavue.js";
-
-const STORAGE_KEY = "expense-tracker-transactions";
-
-function loadTransactions() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-    return Array.isArray(saved) ? saved : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveTransactions(transactions) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions));
-}
+import { deleteTransaction as deleteStoredTransaction, loadTransactions } from "./data-store.js";
 
 createApp({
+  template: document.getElementById("app").innerHTML,
   data: {
-    transactions: loadTransactions(),
+    transactions: await loadTransactions(),
     searchTerm: "",
     sharingFilter: "all",
     sortOrder: "newest"
@@ -75,9 +62,14 @@ createApp({
       window.location.href = `record-transaction.html?edit=${encodeURIComponent(transaction.id)}`;
     },
 
-    deleteTransaction(transaction) {
+    async deleteTransaction(transaction) {
+      try {
+        await deleteStoredTransaction(transaction);
+      } catch (error) {
+        console.error(error);
+        return;
+      }
       this.transactions = this.transactions.filter(item => item.id !== transaction.id);
-      saveTransactions(this.transactions);
     }
   }
 });

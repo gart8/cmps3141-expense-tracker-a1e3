@@ -41,6 +41,10 @@
             <ol>
                 <li :aria-current="currentStep === 1 ? 'step' : null"><strong>1. Payment</strong></li>
                 <li :aria-current="currentStep === 2 ? 'step' : null"><strong>2. Sharing</strong> <small>(optional)</small></li>
+            </ol>
+        </nav>
+        <form @submit.prevent="recordTransaction">
+            <fieldset>
             <ul><li><a href="#profile">Account</a></li></ul>
                     <label for="description">Description <small>(optional)</small>
                         <input id="description" type="text" v-model="description" placeholder="What was this for? e.g. groceries at Brodies">

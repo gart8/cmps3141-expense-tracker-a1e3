@@ -1,28 +1,15 @@
 import { createApp } from "https://mavue.mavo.io/mavue.js";
-
-const STORAGE_KEY = "expense-tracker-transactions";
-
-function loadTransactions() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-    return Array.isArray(saved) ? saved : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveTransactions(transactions) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions));
-}
+import { loadTransactions, saveTransaction } from "./data-store.js";
 
 createApp({
+  template: document.getElementById("app").innerHTML,
   data: {
     date: new Date().toISOString().slice(0, 10),
     amount: "",
     currency: "BZD",
     paidBy: "",
     paidTo: "",
-    transactions: loadTransactions(),
+    transactions: await loadTransactions(),
     message: "",
     error: ""
   },
@@ -40,7 +27,7 @@ createApp({
   },
 
   methods: {
-    recordSettlement() {
+    async recordSettlement() {
       const amount = Number(this.amount);
       this.error = "";
       this.message = "";
@@ -68,8 +55,14 @@ createApp({
         notes: "Settlement"
       };
 
+      try {
+        await saveTransaction(settlement);
+      } catch (error) {
+        this.error = "Could not save this payback. Check the Wix connection and try again.";
+        console.error(error);
+        return;
+      }
       this.transactions.unshift(settlement);
-      saveTransactions(this.transactions);
       this.amount = "";
       this.paidBy = "";
       this.paidTo = "";

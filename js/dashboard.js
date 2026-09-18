@@ -1,15 +1,5 @@
 import { createApp } from "https://mavue.mavo.io/mavue.js";
-
-const STORAGE_KEY = "expense-tracker-transactions";
-
-function loadTransactions() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-    return Array.isArray(saved) ? saved : [];
-  } catch {
-    return [];
-  }
-}
+import { loadTransactions } from "./data-store.js";
 
 function transactionAmount(transaction) {
   return Number(transaction.convertedAmount ?? transaction.amount) || 0;
@@ -46,9 +36,10 @@ function transactionDetail(transaction) {
 }
 
 createApp({
+  template: document.getElementById("app").innerHTML,
   data: {
     selectedMonth: "All time",
-    transactions: loadTransactions()
+    transactions: await loadTransactions()
   },
 
   computed: {

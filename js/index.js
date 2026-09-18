@@ -1,30 +1,17 @@
 import { createApp } from "https://mavue.mavo.io/mavue.js";
-
-const STORAGE_KEY = "expense-tracker-transactions";
+import { deleteTransaction as deleteStoredTransaction, loadTransactions, saveTransaction, updateTransaction } from "./data-store.js";
 
 function today() {
   return new Date().toISOString().slice(0, 10);
 }
 
-function loadTransactions() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-    return Array.isArray(saved) ? saved : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveTransactions(transactions) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions));
-}
-
-const storedTransactions = loadTransactions();
+const storedTransactions = await loadTransactions();
 const editId = new URLSearchParams(window.location.search).get("edit") || "";
 const editingTransaction = storedTransactions.find(transaction => transaction.id === editId);
 const editingAllocation = editingTransaction?.allocation;
 
 createApp({
+  template: document.getElementById("app").innerHTML,
   data: {
     editId: editingTransaction?.id || "",
     description: editingTransaction?.description || "",
@@ -240,7 +227,7 @@ createApp({
       }
     },
 
-    recordTransaction() {
+    async recordTransaction() {
       const amount = Number(this.amount);
       const currency = String(this.currency || "").trim().toUpperCase();
       const exchangeRate = currency === "BZD" ? 1 : Number(this.exchangeRate);
@@ -338,14 +325,25 @@ createApp({
         notes: String(this.notes || "").trim()
       };
 
+      const wasEditing = Boolean(this.editId);
+      try {
+        if (wasEditing) {
+          await updateTransaction(transaction);
+        } else {
+          await saveTransaction(transaction);
+        }
+      } catch (error) {
+        this.error = "Could not save this payment. Check the Wix connection and try again.";
+        console.error(error);
+        return;
+      }
+
       const existingIndex = this.transactions.findIndex(item => item.id === transaction.id);
       if (existingIndex >= 0) {
         this.transactions.splice(existingIndex, 1, transaction);
       } else {
         this.transactions.unshift(transaction);
       }
-      saveTransactions(this.transactions);
-      const wasEditing = Boolean(this.editId);
       this.editId = "";
       this.description = "";
       this.amount = "";
@@ -386,9 +384,15 @@ createApp({
       this.error = "";
     },
 
-    deleteTransaction(transaction) {
+    async deleteTransaction(transaction) {
+      try {
+        await deleteStoredTransaction(transaction);
+      } catch (error) {
+        this.error = "Could not remove this payment. Check the Wix connection and try again.";
+        console.error(error);
+        return;
+      }
       this.transactions = this.transactions.filter(item => item.id !== transaction.id);
-      saveTransactions(this.transactions);
       this.message = "Transaction removed.";
       this.error = "";
     },
