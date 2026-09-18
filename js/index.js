@@ -14,6 +14,7 @@ createApp({
   template: document.getElementById("app").innerHTML,
   data: {
     editId: editingTransaction?.id || "",
+    databaseId: editingTransaction?._id || "",
     description: editingTransaction?.description || "",
     amount: editingTransaction?.originalAmount ?? "",
     currency: editingTransaction?.originalCurrency || "BZD",
@@ -209,6 +210,8 @@ createApp({
 
     addPayer() {
       this.payers.push({ name: "", amount: "" });
+      const newPayerIndex = this.payers.length - 1;
+      setTimeout(() => document.getElementById(`payer-name-${newPayerIndex}`)?.focus(), 0);
     },
 
     removePayer(index) {
@@ -219,6 +222,8 @@ createApp({
 
     addParticipant() {
       this.participants.push({ name: "", share: "" });
+      const newParticipantIndex = this.participants.length - 1;
+      setTimeout(() => document.getElementById(`participant-name-${newParticipantIndex}`)?.focus(), 0);
     },
 
     removeParticipant(index) {
@@ -310,6 +315,7 @@ createApp({
 
       const transaction = {
         id: this.editId || `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        _id: this.databaseId || undefined,
         description: String(this.description || "").trim(),
         originalAmount: Math.round(amount * 100) / 100,
         originalCurrency: currency,
@@ -326,6 +332,7 @@ createApp({
       };
 
       const wasEditing = Boolean(this.editId);
+      const wasIncomplete = this.saveIncomplete;
       try {
         if (wasEditing) {
           await updateTransaction(transaction);
@@ -359,7 +366,7 @@ createApp({
       this.notes = "";
       if (wasEditing) {
         this.message = "Transaction updated. Form is ready for another entry.";
-      } else if (this.saveIncomplete) {
+      } else if (wasIncomplete) {
         this.message = "Payment saved. Sharing can be completed later. Form is ready for another entry.";
       } else {
         this.message = "Transaction saved. Form is ready for another entry.";
@@ -403,8 +410,16 @@ createApp({
       return `${currency} ${Number(amount).toFixed(2)}`;
     },
 
+    transactionTitle(transaction) {
+      if (transaction.type === "settlement") {
+        return `Payback: ${transaction.paidBy || "Unknown"} to ${transaction.paidTo || "Unknown"}`;
+      }
+      return transaction.description || "Unlabeled transaction";
+    },
+
     payerSummary(transaction) {
       const currency = transaction.originalCurrency || transaction.currency;
+      if (transaction.type === "settlement") return transaction.paidBy || "Unknown";
       if (Array.isArray(transaction.payers)) {
         return transaction.payers.map(payer => `${payer.name}: ${currency} ${Number(payer.amount).toFixed(2)}`).join("; ");
       }

@@ -1,5 +1,5 @@
 import { createApp } from "https://mavue.mavo.io/mavue.js";
-import { loadTransactions } from "./data-store.js";
+import { deleteTransaction as deleteStoredTransaction, loadTransactions } from "./data-store.js";
 
 function transactionAmount(transaction) {
   return Number(transaction.convertedAmount ?? transaction.amount) || 0;
@@ -22,6 +22,9 @@ function transactionDateLabel(date) {
 }
 
 function transactionDetail(transaction) {
+  if (isSettlement(transaction)) {
+    return `${transaction.paidBy || "Unknown"} paid back ${transaction.paidTo || "Unknown"}`;
+  }
   if (!Array.isArray(transaction.payers)) {
     return `Paid by ${transaction.paidBy || "Unknown"}`;
   }
@@ -71,6 +74,10 @@ createApp({
       return this.expenseTransactions.length;
     },
 
+    settlementCount() {
+      return this.settlementTransactions.length;
+    },
+
     sharedTransactionCount() {
       return this.expenseTransactions.filter(transaction => transaction.sharing?.required).length;
     },
@@ -88,13 +95,18 @@ createApp({
     },
 
     recentTransactions() {
-      return [...this.expenseTransactions]
+      return [...this.selectedMonthTransactions]
         .sort((first, second) => second.date.localeCompare(first.date))
         .slice(0, 5)
         .map(transaction => ({
-          title: transaction.description || `${transactionCurrency(transaction)} ${transactionOriginalAmount(transaction).toFixed(2)} transaction`,
+          id: transaction.id,
+          title: isSettlement(transaction)
+            ? `Payback: ${transaction.paidBy || "Unknown"} to ${transaction.paidTo || "Unknown"}`
+            : transaction.description || `${transactionCurrency(transaction)} ${transactionOriginalAmount(transaction).toFixed(2)} transaction`,
           detail: transactionDetail(transaction),
-          date: transactionDateLabel(transaction.date)
+          date: transactionDateLabel(transaction.date),
+          amount: `${transactionCurrency(transaction)} ${transactionOriginalAmount(transaction).toFixed(2)}`,
+          source: transaction
         }));
     },
 
@@ -168,6 +180,19 @@ createApp({
   methods: {
     formatBzd(amount) {
       return `BZD ${Number(amount).toFixed(2)}`;
+    },
+
+    editTransaction(transaction) {
+      window.location.href = `record-transaction.html?edit=${encodeURIComponent(transaction.id)}`;
+    },
+
+    async deleteTransaction(transaction) {
+      try {
+        await deleteStoredTransaction(transaction.source);
+        this.transactions = this.transactions.filter(item => item.id !== transaction.id);
+      } catch (error) {
+        console.error(error);
+      }
     }
   }
 });

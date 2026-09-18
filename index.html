@@ -8,6 +8,158 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
     <script src="https://unpkg.com/lucide@0.468.0"></script>
     <script type="module" src="js/dashboard.js"></script>
+    <style>
+        .activity-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .activity-card {
+            border: 1px solid #dce6f2;
+            border-radius: 0.75rem;
+            box-shadow: 0 0.25rem 1rem rgba(39, 67, 102, 0.06);
+            padding-bottom: 0.25rem;
+            padding-top: 0.25rem;
+        }
+
+        .activity-item {
+            align-items: start;
+            border-bottom: 1px solid var(--pico-muted-border-color);
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: minmax(0, 1fr) auto;
+            padding: 1.25rem 0;
+        }
+
+        .activity-item:last-child {
+            border-bottom: 0;
+        }
+
+        .activity-icon {
+            align-items: center;
+            background: #e4edfc;
+            border-radius: 50%;
+            display: flex;
+            color: #304c70;
+            height: 3.5rem;
+            justify-content: center;
+            width: 3.5rem;
+        }
+
+        .activity-main,
+        .activity-amount {
+            min-width: 0;
+        }
+
+        .activity-info,
+        .activity-side {
+            align-items: center;
+            display: flex;
+        }
+
+        .activity-info {
+            gap: 1rem;
+            min-width: 0;
+        }
+
+        .activity-side {
+            align-items: flex-end;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .activity-title,
+        .activity-date,
+        .activity-detail,
+        .activity-amount,
+        .activity-type {
+            display: block;
+        }
+
+        .activity-title {
+            overflow-wrap: anywhere;
+        }
+
+        .activity-date,
+        .activity-detail,
+        .activity-type {
+            color: var(--pico-muted-color);
+        }
+
+        .activity-date,
+        .activity-detail {
+            line-height: 1.45;
+        }
+
+        .activity-type {
+            border-radius: 999px;
+            display: inline-block;
+            font-weight: 600;
+            margin-top: 0.45rem;
+            padding: 0.2rem 0.7rem;
+        }
+
+        .activity-type.payment {
+            background: #e5efff;
+            color: #1671e8;
+        }
+
+        .activity-type.payback {
+            background: #d9f5e5;
+            color: #168456;
+        }
+
+        .activity-amount {
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .activity-actions {
+            display: flex;
+            gap: 0.35rem;
+            justify-content: flex-end;
+        }
+
+        .activity-actions button {
+            background: transparent;
+            border-color: #cfddf0;
+            color: #58708f;
+            margin: 0;
+            padding: 0.45rem;
+        }
+
+        @media (max-width: 600px) {
+            .activity-item {
+                align-items: start;
+                gap: 0.65rem;
+                grid-template-columns: minmax(0, 1fr) auto;
+            }
+
+            .activity-amount {
+                text-align: left;
+            }
+
+            .activity-actions {
+                display: flex;
+                flex-direction: column;
+                gap: 0.35rem;
+            }
+
+            .activity-info,
+            .activity-side {
+                align-items: flex-start;
+            }
+
+            .activity-side {
+                gap: 0.5rem;
+            }
+
+            .activity-amount {
+                text-align: right;
+            }
+        }
+    </style>
 </head>
 <body style="--pico-spacing: 0.7rem; --pico-block-spacing-vertical: 0.6rem; --pico-typography-spacing-vertical: 0.6rem; --pico-form-element-spacing-vertical: 0.55rem; --pico-nav-element-spacing-vertical: 0.5rem;">
 
@@ -104,15 +256,30 @@
         <section aria-labelledby="activity-heading">
             <header>
                 <p><mark>Recent</mark></p>
-                <h2 id="activity-heading">Recent payments</h2>
-                <small>{{ transactionCount }} payment<span v-if="transactionCount !== 1">s</span> · {{ formatBzd(totalBzd) }} recorded</small>
+                <h2 id="activity-heading">Recent activity</h2>
+                <small>{{ transactionCount }} payment<span v-if="transactionCount !== 1">s</span><span v-if="settlementCount"> · {{ settlementCount }} payback<span v-if="settlementCount !== 1">s</span></span> · {{ formatBzd(totalBzd) }} recorded</small>
             </header>
-            <article style="--pico-block-spacing-horizontal: 1.25rem;">
-                <ul>
-                    <li v-for="transaction in recentTransactions">
-                        <i data-lucide="receipt" aria-hidden="true"></i>
-                        <strong>{{ transaction.title }}</strong><br>
-                        <small>{{ transaction.detail }} · {{ transaction.date }}</small>
+            <article class="activity-card" style="--pico-block-spacing-horizontal: 1.25rem;">
+                <ul class="activity-list">
+                    <li v-for="transaction in recentTransactions" class="activity-item">
+                        <div class="activity-info">
+                            <div class="activity-icon"><i :data-lucide="transaction.source.type === 'settlement' ? 'arrow-left-right' : 'receipt'" aria-hidden="true"></i></div>
+                            <div class="activity-main">
+                                <strong class="activity-title">{{ transaction.title }}</strong>
+                                <small class="activity-date">{{ transaction.date }}</small>
+                                <small class="activity-detail">{{ transaction.detail }}</small>
+                                <small class="activity-type" :class="transaction.source.type === 'settlement' ? 'payback' : 'payment'">{{ transaction.source.type === 'settlement' ? 'Payback' : 'Payment' }}</small>
+                            </div>
+                        </div>
+                        <div class="activity-side">
+                            <div class="activity-amount">
+                                <strong>{{ transaction.amount }}</strong>
+                            </div>
+                            <div class="activity-actions">
+                                <button v-if="transaction.source.type !== 'settlement'" type="button" class="secondary" @click="editTransaction(transaction)" data-tooltip="Edit transaction" aria-label="Edit transaction"><i data-lucide="pencil" aria-hidden="true"></i></button>
+                                <button type="button" class="secondary outline" @click="deleteTransaction(transaction)" data-tooltip="Delete transaction" aria-label="Delete transaction"><i data-lucide="trash-2" aria-hidden="true"></i></button>
+                            </div>
+                        </div>
                     </li>
                 </ul>
                 <footer><a href="transactions.html">See payment history</a></footer>

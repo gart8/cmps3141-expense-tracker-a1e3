@@ -8,6 +8,82 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
     <script src="https://unpkg.com/lucide@0.468.0"></script>
     <script type="module" src="js/index.js"></script>
+    <style>
+        .remove-row-button {
+            align-self: end;
+            justify-self: start;
+            margin: 0 0 1rem;
+            padding: 0.5rem;
+            width: auto;
+        }
+
+        .payer-row,
+        .participant-row {
+            align-items: end;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        }
+        .payer-entry,
+        .participant-entry {
+            background: color-mix(in srgb, var(--pico-card-background-color) 88%, var(--pico-primary-background) 12%);
+            border: 1px solid var(--pico-muted-border-color);
+            border-radius: 0.65rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+        }
+
+        .payer-entry:last-of-type,
+        .participant-entry:last-of-type {
+            margin-bottom: 0;
+        }
+
+        .payer-entry-header {
+            align-items: center;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.8rem;
+        }
+
+        .payer-entry-header .remove-row-button {
+            margin-bottom: 0;
+        }
+
+        .payer-entry-label {
+            align-items: center;
+            display: inline-flex;
+            gap: 0.45rem;
+            font-weight: 650;
+        }
+        .participant-entry-header {
+            align-items: center;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.8rem;
+        }
+
+        .participant-entry-header .remove-row-button {
+            margin-bottom: 0;
+        }
+
+        @media (max-width: 700px) {
+            .payer-row,
+            .participant-row {
+                grid-template-columns: 1fr;
+            }
+
+            .payer-entry {
+                padding: 0.85rem;
+            }
+
+            .participant-entry {
+                padding: 0.85rem;
+            }
+
+            .remove-row-button {
+                justify-self: start;
+                margin-bottom: 0;
+            }
+        }
+    </style>
 </head>
 <body style="--pico-spacing: 0.7rem; --pico-block-spacing-vertical: 0.6rem; --pico-typography-spacing-vertical: 0.6rem; --pico-form-element-spacing-vertical: 0.55rem; --pico-nav-element-spacing-vertical: 0.5rem;">
 
@@ -28,7 +104,7 @@
                 </details></li>
                 <li><a href="index.html"><strong><img src="assets/dalla-tab-mark.svg" width="32" height="32" alt=""> Dalla Tab</strong></a></li>
             </ul>
-            <ul><li><a href="#profile">Account</a></li></ul>
+            <ul><li><a href="#profile" aria-label="Account">Account</a></li></ul>
         </nav>
     </header>
 
@@ -43,9 +119,8 @@
                 <li :aria-current="currentStep === 2 ? 'step' : null"><strong>2. Sharing</strong> <small>(optional)</small></li>
             </ol>
         </nav>
-        <form @submit.prevent="recordTransaction">
+        <form @submit.prevent="recordTransaction" @keydown.ctrl.enter.prevent="handleShortcut" @keydown.meta.enter.prevent="handleShortcut">
             <fieldset>
-            <ul><li><a href="#profile">Account</a></li></ul>
                     <label for="description">Description <small>(optional)</small>
                         <input id="description" type="text" v-model="description" placeholder="What was this for? e.g. groceries at Brodies">
                     </label>
@@ -95,16 +170,21 @@
 
                 <fieldset v-if="currentStep === 1">
                     <legend><i data-lucide="wallet-cards" aria-hidden="true"></i> Who paid? <small>(required)</small></legend>
-                    <div v-for="(payer, index) in payers" class="grid">
-                        <label :for="'payer-name-' + index">Person or account
-                            <input :id="'payer-name-' + index" type="text" list="payer-options" v-model="payer.name" placeholder="Choose or type" required :aria-invalid="Boolean(payerNameError(payer))">
-                            <small v-if="payerNameError(payer)" role="alert">{{ payerNameError(payer) }}</small>
-                        </label>
-                        <label :for="'payer-amount-' + index">Amount paid
-                            <input :id="'payer-amount-' + index" type="number" min="0.01" step="0.01" v-model="payer.amount" required inputmode="decimal" placeholder="0.00" :aria-invalid="Boolean(payerAmountError(payer))">
-                            <small v-if="payerAmountError(payer)" role="alert">{{ payerAmountError(payer) }}</small>
-                        </label>
-                        <button v-if="payers.length > 1" type="button" class="secondary" @click="removePayer(index)" :aria-label="'Remove payer ' + (index + 1)" data-tooltip="Remove payer"><i data-lucide="trash-2" aria-hidden="true"></i> Remove</button>
+                    <div v-for="(payer, index) in payers" class="payer-entry">
+                        <div class="payer-entry-header">
+                            <span class="payer-entry-label"><i data-lucide="user-round" aria-hidden="true"></i> Payer details</span>
+                            <button v-if="payers.length > 1" type="button" class="secondary outline remove-row-button" @click="removePayer(index)" :aria-label="'Remove payer ' + (index + 1)" data-tooltip="Remove payer"><i data-lucide="trash-2" aria-hidden="true"></i></button>
+                        </div>
+                        <div class="grid payer-row">
+                            <label :for="'payer-name-' + index">Person or account
+                                <input :id="'payer-name-' + index" type="text" list="payer-options" v-model="payer.name" placeholder="Choose or type" required :aria-invalid="Boolean(payerNameError(payer))">
+                                <small v-if="payerNameError(payer)" role="alert">{{ payerNameError(payer) }}</small>
+                            </label>
+                            <label :for="'payer-amount-' + index">Amount paid
+                                <input :id="'payer-amount-' + index" type="number" min="0.01" step="0.01" v-model="payer.amount" required inputmode="decimal" placeholder="0.00" :aria-invalid="Boolean(payerAmountError(payer))">
+                                <small v-if="payerAmountError(payer)" role="alert">{{ payerAmountError(payer) }}</small>
+                            </label>
+                        </div>
                     </div>
                     <footer>
                         <progress :value="payerProgress" max="100" aria-label="Payer amount completion"></progress>
@@ -149,14 +229,19 @@
                                 <small>Different amounts</small>
                             </div>
                         </div>
-                        <div v-for="(participant, index) in participants" class="grid">
-                            <label :for="'participant-name-' + index">Person or group
-                                <input :id="'participant-name-' + index" type="text" list="participant-options" v-model="participant.name" placeholder="Choose or type">
-                            </label>
-                            <label v-if="allocationMode === 'custom'" :for="'participant-share-' + index">Share amount
-                                <input :id="'participant-share-' + index" type="number" min="0" step="0.01" v-model="participant.share" inputmode="decimal" placeholder="0.00">
-                            </label>
-                            <button v-if="participants.length > 1" type="button" class="secondary" @click="removeParticipant(index)" :aria-label="'Remove participant ' + (index + 1)" data-tooltip="Remove participant"><i data-lucide="trash-2" aria-hidden="true"></i> Remove</button>
+                        <div v-for="(participant, index) in participants" class="participant-entry">
+                            <div class="participant-entry-header">
+                                <span class="payer-entry-label"><i data-lucide="user-round" aria-hidden="true"></i> Participant details</span>
+                                <button v-if="participants.length > 1" type="button" class="secondary outline remove-row-button" @click="removeParticipant(index)" :aria-label="'Remove participant ' + (index + 1)" data-tooltip="Remove participant"><i data-lucide="trash-2" aria-hidden="true"></i></button>
+                            </div>
+                            <div class="grid participant-row" :class="{ 'custom-share-row': allocationMode === 'custom' }">
+                                <label :for="'participant-name-' + index">Person or group
+                                    <input :id="'participant-name-' + index" type="text" list="participant-options" v-model="participant.name" placeholder="Choose or type">
+                                </label>
+                                <label v-if="allocationMode === 'custom'" :for="'participant-share-' + index">Share amount
+                                    <input :id="'participant-share-' + index" type="number" min="0" step="0.01" v-model="participant.share" inputmode="decimal" placeholder="0.00">
+                                </label>
+                            </div>
                         </div>
                         <progress :value="allocationProgress" max="100" aria-label="Expense allocation completion"></progress>
                         <dl class="grid">
@@ -204,7 +289,7 @@
                     <header>
                         <div class="grid" style="grid-template-columns: 1fr auto;">
                             <div>
-                                <strong>{{ transaction.description || "Unlabeled transaction" }}</strong>
+                                <strong>{{ transactionTitle(transaction) }}</strong>
                                 <br>
                                 <time :datetime="transaction.date"><small>{{ transaction.date }}</small></time>
                             </div>

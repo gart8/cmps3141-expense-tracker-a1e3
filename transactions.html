@@ -8,6 +8,22 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
     <script src="https://unpkg.com/lucide@0.468.0"></script>
     <script type="module" src="js/transactions.js"></script>
+    <style>
+        .transaction-filters {
+            align-items: end;
+            gap: 1rem;
+        }
+
+        .transaction-filters label {
+            margin-bottom: 0;
+        }
+
+        @media (max-width: 700px) {
+            .transaction-filters {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body style="--pico-spacing: 0.7rem; --pico-block-spacing-vertical: 0.6rem; --pico-typography-spacing-vertical: 0.6rem; --pico-form-element-spacing-vertical: 0.55rem; --pico-nav-element-spacing-vertical: 0.5rem;">
 
@@ -41,7 +57,7 @@
             <header>
                 <h2><i data-lucide="list-filter" aria-hidden="true"></i> Find payments</h2>
             </header>
-            <div class="grid">
+            <div class="grid transaction-filters">
                 <label for="search">Search
                     <input id="search" type="search" v-model="searchTerm" placeholder="Description, category, or payer">
                 </label>
@@ -51,6 +67,7 @@
                         <option value="none">No sharing needed</option>
                         <option value="shared">Sharing complete</option>
                         <option value="incomplete">Sharing details pending</option>
+                        <option value="settlement">Paybacks</option>
                     </select>
                 </label>
                 <label for="sort-order">Sort

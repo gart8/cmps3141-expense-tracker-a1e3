@@ -27,8 +27,9 @@ export async function saveTransaction(transaction) {
 }
 
 export async function updateTransaction(transaction) {
+  const databaseId = transaction._id || transaction.transactionId || transaction.id;
   const transactionId = transaction.transactionId || transaction.id;
-  const response = await fetch(`${API_URL}/${encodeURIComponent(transactionId)}`, {
+  const response = await fetch(`${API_URL}/${encodeURIComponent(databaseId)}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ ...transaction, transactionId })
@@ -38,8 +39,8 @@ export async function updateTransaction(transaction) {
 }
 
 export async function deleteTransaction(transaction) {
-  const transactionId = transaction.transactionId || transaction.id;
-  const response = await fetch(`${API_URL}/${encodeURIComponent(transactionId)}`, {
+  const databaseId = transaction._id || transaction.transactionId || transaction.id;
+  const response = await fetch(`${API_URL}/${encodeURIComponent(databaseId)}`, {
     method: "DELETE"
   });
   if (!response.ok) throw new Error(`Could not delete Wix data (${response.status})`);

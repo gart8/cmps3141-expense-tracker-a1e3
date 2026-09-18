@@ -7,6 +7,7 @@ createApp({
     date: new Date().toISOString().slice(0, 10),
     amount: "",
     currency: "BZD",
+    exchangeRate: 1,
     paidBy: "",
     paidTo: "",
     transactions: await loadTransactions(),
@@ -29,6 +30,7 @@ createApp({
   methods: {
     async recordSettlement() {
       const amount = Number(this.amount);
+      const exchangeRate = this.currency === "BZD" ? 1 : Number(this.exchangeRate);
       this.error = "";
       this.message = "";
 
@@ -40,6 +42,10 @@ createApp({
         this.error = "Choose two different people or accounts.";
         return;
       }
+      if (!Number.isFinite(exchangeRate) || exchangeRate <= 0) {
+        this.error = "Enter a valid exchange rate to BZD.";
+        return;
+      }
 
       const settlement = {
         id: `settlement-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
@@ -47,8 +53,8 @@ createApp({
         date: this.date,
         originalAmount: Math.round(amount * 100) / 100,
         originalCurrency: this.currency,
-        exchangeRate: this.currency === "BZD" ? 1 : 1,
-        convertedAmount: Math.round(amount * 100) / 100,
+        exchangeRate,
+        convertedAmount: Math.round(amount * exchangeRate * 100) / 100,
         paidBy: this.paidBy,
         paidTo: this.paidTo,
         sharing: { required: false, status: "not-needed" },
@@ -64,6 +70,7 @@ createApp({
       }
       this.transactions.unshift(settlement);
       this.amount = "";
+      this.exchangeRate = 1;
       this.paidBy = "";
       this.paidTo = "";
       this.message = "Payback recorded.";
@@ -73,6 +80,7 @@ createApp({
       this.date = new Date().toISOString().slice(0, 10);
       this.amount = "";
       this.currency = "BZD";
+      this.exchangeRate = 1;
       this.paidBy = "";
       this.paidTo = "";
       this.message = "";

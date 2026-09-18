@@ -8,15 +8,53 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
     <script src="https://unpkg.com/lucide@0.468.0"></script>
     <script type="module" src="js/record-settlement.js"></script>
+    <style>
+        .settlement-group {
+            background: color-mix(in srgb, var(--pico-card-background-color) 88%, var(--pico-primary-background) 12%);
+            border: 1px solid var(--pico-muted-border-color);
+            border-radius: 0.65rem;
+            margin-bottom: 1.25rem;
+            padding: 1rem;
+        }
+
+        .settlement-group:last-of-type {
+            margin-bottom: 0;
+        }
+
+        .settlement-group legend {
+            font-weight: 650;
+        }
+
+        .settlement-group .grid {
+            column-gap: 1rem;
+            row-gap: 0.75rem;
+        }
+
+        .settlement-group > label[for="date"] {
+            margin-top: 0.9rem;
+        }
+
+        .settlement-actions {
+            column-gap: 1rem;
+            margin-top: 0.25rem;
+        }
+
+        @media (max-width: 700px) {
+            .settlement-group {
+                padding: 0.85rem;
+            }
+        }
+    </style>
 </head>
 <body style="--pico-spacing: 0.7rem; --pico-block-spacing-vertical: 0.6rem; --pico-typography-spacing-vertical: 0.6rem; --pico-form-element-spacing-vertical: 0.55rem; --pico-nav-element-spacing-vertical: 0.5rem;">
 <div id="app">
     <header class="container">
         <nav>
             <ul>
-                <li><details class="dropdown"><summary aria-label="Open menu"><i data-lucide="menu" aria-hidden="true"></i></summary><ul><li><a href="index.html">Dashboard</a></li><li><a href="record-transaction.html">Record payment</a></li><li><a href="transactions.html">Payment history</a></li><li><a href="record-settlement.html">Pay someone back</a></li></ul></details></li>
+                <li><details class="dropdown"><summary aria-label="Open menu"><i data-lucide="menu" aria-hidden="true"></i></summary><ul><li><a href="index.html">Dashboard</a></li><li><a href="record-transaction.html">Record payment</a></li><li><a href="transactions.html">Payment history</a></li><li><a href="record-settlement.html">Pay someone back</a></li><li><a href="#settings">Settings</a></li><li><a href="#help">Help</a></li></ul></details></li>
                 <li><a href="index.html"><strong><img src="assets/dalla-tab-mark.svg" width="32" height="32" alt=""> Dalla Tab</strong></a></li>
             </ul>
+            <ul><li><a href="#profile" aria-label="Account">Account</a></li></ul>
         </nav>
     </header>
 
@@ -26,9 +64,9 @@
         <p>Record money paid back between people or accounts.</p>
 
         <article>
-            <form @submit.prevent="recordSettlement">
-                <fieldset>
-                    <legend><i data-lucide="arrow-left-right" aria-hidden="true"></i> Payback details</legend>
+            <form class="settlement-form" @submit.prevent="recordSettlement">
+                <fieldset class="settlement-group">
+                    <legend><i data-lucide="users-round" aria-hidden="true"></i> Who is involved?</legend>
                     <div class="grid">
                         <label for="paid-by">Paid by
                             <input id="paid-by" type="text" list="people" v-model="paidBy" required placeholder="Choose or type">
@@ -37,6 +75,9 @@
                             <input id="paid-to" type="text" list="people" v-model="paidTo" required placeholder="Choose or type">
                         </label>
                     </div>
+                </fieldset>
+                <fieldset class="settlement-group">
+                    <legend><i data-lucide="wallet-cards" aria-hidden="true"></i> Payback amount</legend>
                     <div class="grid">
                         <label for="amount">Amount
                             <input id="amount" type="number" min="0.01" step="0.01" v-model="amount" required inputmode="decimal" placeholder="0.00">
@@ -44,13 +85,17 @@
                         <label for="currency">Currency
                             <select id="currency" v-model="currency"><option value="BZD">BZD</option><option value="MXN">MXN</option><option value="GTQ">GTQ</option><option value="USD">USD</option></select>
                         </label>
+                        <label v-if="currency !== 'BZD'" for="exchange-rate">Exchange rate to BZD
+                            <small>How many BZD is 1 {{ currency }}?</small>
+                            <input id="exchange-rate" type="number" min="0.000001" step="0.000001" v-model="exchangeRate" required inputmode="decimal" placeholder="e.g. 0.12">
+                        </label>
                     </div>
                     <label for="date">Date
                         <input id="date" type="date" v-model="date" required>
                     </label>
                 </fieldset>
                 <datalist id="people"><option v-for="person in people" :value="person"></option></datalist>
-                <div class="grid">
+                <div class="grid settlement-actions">
                     <button type="submit"><i data-lucide="check" aria-hidden="true"></i> Record payback</button>
                     <button type="button" class="secondary" @click="clearForm"><i data-lucide="eraser" aria-hidden="true"></i> Clear</button>
                 </div>

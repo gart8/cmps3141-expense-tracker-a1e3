@@ -17,7 +17,9 @@ createApp({
         .filter(transaction => {
           const searchable = [transaction.description, transaction.category, transaction.paidBy, transaction.paidTo, ...(transaction.payers || []).map(payer => payer.name)].join(" ").toLowerCase();
           const matchesSearch = !search || searchable.includes(search);
-          const status = transaction.sharing?.status === "incomplete"
+          const status = transaction.type === "settlement"
+            ? "settlement"
+            : transaction.sharing?.status === "incomplete"
             ? "incomplete"
             : transaction.allocation?.mode === "none" ? "none" : "shared";
           return matchesSearch && (this.sharingFilter === "all" || status === this.sharingFilter);
