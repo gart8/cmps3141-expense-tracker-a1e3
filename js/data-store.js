@@ -11,7 +11,8 @@ export async function loadTransactions() {
   const response = await fetch(API_URL, { cache: "no-store" });
   if (!response.ok) throw new Error(`Could not load Wix data (${response.status})`);
   const data = await response.json();
-  return Array.isArray(data) ? data.map(normalizeTransaction) : [];
+  const transactions = Array.isArray(data) ? data : data?.value;
+  return Array.isArray(transactions) ? transactions.map(normalizeTransaction) : [];
 }
 
 export async function saveTransaction(transaction) {
