@@ -1,0 +1,38 @@
+.currency-amount {
+    display: inline-flex;
+    flex-direction: column;
+    line-height: 1.15;
+}
+
+.currency-amount .currency-value {
+    font-weight: 700;
+}
+
+.currency-amount .currency-code {
+    color: var(--pico-muted-color);
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    margin-top: 0.18rem;
+    text-transform: uppercase;
+}
+
+.currency-amount.compact .currency-value {
+    font-size: 0.95rem;
+}
+
+.currency-inline {
+    align-items: baseline;
+    display: inline-flex;
+    gap: 0;
+    white-space: nowrap;
+}
+
+.currency-inline .currency-code {
+    color: var(--pico-muted-color);
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    margin-left: 0.15rem;
+    text-transform: uppercase;
+}

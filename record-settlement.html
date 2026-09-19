@@ -6,8 +6,10 @@
     <title>Pay Someone Back | Dalla Tab</title>
     <link rel="icon" href="assets/dalla-tab-mark.svg" type="image/svg+xml">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <link rel="stylesheet" href="css/person-combobox.css">
     <script src="https://unpkg.com/lucide@0.468.0"></script>
     <script type="module" src="js/record-settlement.js"></script>
+    <script type="module" src="js/person-combobox.js"></script>
     <style>
         .settlement-group {
             background: color-mix(in srgb, var(--pico-card-background-color) 88%, var(--pico-primary-background) 12%);
@@ -69,10 +71,10 @@
                     <legend><i data-lucide="users-round" aria-hidden="true"></i> Who is involved?</legend>
                     <div class="grid">
                         <label for="paid-by">Paid by
-                            <input id="paid-by" type="text" list="people" v-model="paidBy" required placeholder="Choose or type">
+                            <input id="paid-by" data-person-combobox type="text" list="people" v-model="paidBy" required placeholder="Choose or type">
                         </label>
                         <label for="paid-to">Paid to
-                            <input id="paid-to" type="text" list="people" v-model="paidTo" required placeholder="Choose or type">
+                            <input id="paid-to" data-person-combobox type="text" list="people" v-model="paidTo" required placeholder="Choose or type">
                         </label>
                     </div>
                 </fieldset>

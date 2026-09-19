@@ -6,8 +6,15 @@
     <title>Record Payment | Dalla Tab</title>
     <link rel="icon" href="assets/dalla-tab-mark.svg" type="image/svg+xml">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <link rel="stylesheet" href="css/person-combobox.css">
+    <link rel="stylesheet" href="css/status-tags.css">
+    <link rel="stylesheet" href="css/icon-actions.css">
+    <link rel="stylesheet" href="css/currency-amount.css">
+    <link rel="stylesheet" href="css/confirm-modal.css">
     <script src="https://unpkg.com/lucide@0.468.0"></script>
     <script type="module" src="js/index.js"></script>
+    <script type="module" src="js/person-combobox.js"></script>
+    <script type="module" src="js/confirm-modal.js"></script>
     <style>
         .remove-row-button {
             align-self: end;
@@ -62,6 +69,278 @@
 
         .participant-entry-header .remove-row-button {
             margin-bottom: 0;
+        }
+
+        .payment-form {
+            background: color-mix(in srgb, var(--pico-card-background-color) 92%, var(--pico-primary-background) 8%);
+            border: 2px solid color-mix(in srgb, var(--pico-primary) 32%, var(--pico-muted-border-color) 68%);
+            border-radius: 0.75rem;
+            box-shadow: 0 0.35rem 1.25rem rgba(39, 67, 102, 0.08);
+            margin-bottom: 3.5rem;
+            padding: 1.5rem;
+        }
+
+        .payment-details-panel {
+            border-bottom: 1px solid var(--pico-muted-border-color);
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+
+        .payment-details-panel > legend,
+        .sharing-panel > fieldset > legend {
+            color: var(--pico-primary);
+            font-size: 1.15rem;
+            font-weight: 700;
+        }
+
+        .sharing-panel {
+            background: color-mix(in srgb, var(--pico-primary-background) 14%, var(--pico-card-background-color) 86%);
+            border: 1px solid color-mix(in srgb, var(--pico-primary) 30%, var(--pico-muted-border-color) 70%);
+            border-radius: 0.75rem;
+            margin: 1.5rem 0;
+            padding: 1rem 1.25rem 1.25rem;
+        }
+
+        .sharing-panel > summary {
+            color: var(--pico-primary);
+            font-size: 1.15rem;
+            font-weight: 700;
+            padding: 0.25rem 0;
+        }
+
+        .sharing-panel > summary::after {
+            color: var(--pico-primary);
+        }
+
+        .sharing-panel > fieldset {
+            border: 0;
+            margin-bottom: 0;
+            padding: 1rem 0 0;
+        }
+
+        .sharing-panel .participant-entry {
+            background: var(--pico-card-background-color);
+        }
+
+        .expense-sharing-section {
+            background: color-mix(in srgb, var(--pico-card-background-color) 92%, var(--pico-primary-background) 8%);
+            border: 1px solid var(--pico-muted-border-color);
+            border-radius: 0.65rem;
+            margin: 1.25rem 0 0;
+            padding: 1rem 1.1rem 0.5rem;
+        }
+
+        .expense-sharing-section > legend {
+            color: var(--pico-primary);
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .expense-sharing-section:has(input[value="shared"]:checked) {
+            border-color: color-mix(in srgb, var(--pico-primary) 30%, var(--pico-muted-border-color) 70%);
+            box-shadow: 0 0.25rem 1rem rgba(39, 67, 102, 0.06);
+        }
+
+        .sharing-choice-grid {
+            column-gap: 2rem;
+            margin-bottom: 1.35rem;
+        }
+
+        .sharing-choice {
+            align-items: center;
+            border: 1px solid transparent;
+            border-radius: 0.55rem;
+            display: flex;
+            gap: 0.65rem;
+            margin: 0;
+            padding: 0.65rem 0.75rem;
+        }
+
+        .sharing-choice:has(input:checked) {
+            background: #eef6ff;
+            border-color: #c7def8;
+        }
+
+        .sharing-choice input[type="radio"] {
+            height: 1.65rem;
+            margin: 0;
+            width: 1.65rem;
+        }
+
+        .sharing-choice span {
+            color: var(--pico-color);
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .sharing-choice-note {
+            color: var(--pico-muted-color);
+            display: block;
+            margin: 0.3rem 0 0 2.3rem;
+        }
+
+        .sharing-choice-note:empty {
+            display: none;
+        }
+
+        .sharing-next-step {
+            border-top: 1px solid var(--pico-muted-border-color);
+            color: var(--pico-primary);
+            font-size: 1.05rem;
+            font-weight: 650;
+            margin: 0;
+            padding: 0.85rem 0 1rem;
+        }
+
+        .sharing-next-step i {
+            margin-right: 0.45rem;
+        }
+
+        .shared-continue-action {
+            display: block;
+            margin: 0;
+            width: 100%;
+        }
+
+        .save-later-action {
+            align-items: center;
+            border-top: 1px solid var(--pico-muted-border-color);
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            gap: 0.45rem;
+            justify-content: center;
+            margin-top: 1rem;
+            padding-top: 0.85rem;
+            text-align: center;
+            width: 100%;
+        }
+
+        .save-later-action small {
+            color: #5d7188;
+        }
+
+        .save-later-action button {
+            margin: 0;
+        }
+
+        .form-utility-actions {
+            align-items: center;
+            background: #f2f6fb;
+            border: 1px solid #d5e1ee;
+            border-radius: 0.65rem;
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: 1fr;
+            margin-top: 2rem;
+            padding: 1.1rem 1.2rem;
+            position: relative;
+        }
+
+        .utility-heading {
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+        }
+
+        .utility-heading strong {
+            color: #385a7c;
+            font-size: 0.9rem;
+        }
+
+        .utility-heading small {
+            color: #6a7d92;
+        }
+
+        .utility-heading::before {
+            color: #58708f;
+            content: "ⓘ";
+            float: left;
+            font-size: 1.25rem;
+            margin-right: 0.65rem;
+        }
+
+        .utility-items {
+            align-items: center;
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            width: 100%;
+        }
+
+        .form-utility-actions .save-later-action {
+            border-top: 0;
+            margin-top: 0;
+            padding-top: 0;
+        }
+
+        .form-utility-actions .clear-form-button {
+            background: #ffffff;
+            border-color: #c8d5e4;
+            color: #5d7188;
+            margin: 0;
+            padding: 0.45rem 0.8rem;
+        }
+
+        .clear-form-action {
+            border-top: 1px solid #d5e1ee;
+            display: flex;
+            justify-content: center;
+            margin-top: 0.85rem;
+            padding-top: 0.85rem;
+        }
+
+        @media (max-width: 700px) {
+            .form-utility-actions {
+                align-items: start;
+                grid-template-columns: 1fr;
+            }
+
+            .utility-items {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 0.65rem;
+                justify-content: flex-start;
+                width: 100%;
+            }
+
+            .save-later-action {
+                justify-content: center;
+                width: 100%;
+            }
+
+            .sharing-choice-grid {
+                row-gap: 1rem;
+            }
+        }
+
+        .recent-payments-panel {
+            background: color-mix(in srgb, var(--pico-card-background-color) 97%, var(--pico-muted-color) 3%);
+            border-top: 1px solid var(--pico-muted-border-color);
+            margin-top: 0;
+            padding-top: 1.5rem;
+        }
+
+        .recent-payments-panel > header {
+            margin-bottom: 0.9rem;
+        }
+
+        .recent-payments-panel h2 {
+            color: var(--pico-muted-color);
+            font-size: 1.35rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .recent-payments-panel > header small,
+        .recent-payments-panel article small {
+            color: var(--pico-muted-color);
+        }
+
+        @media (max-width: 700px) {
+            .payment-form {
+                padding: 1rem;
+            }
         }
 
         @media (max-width: 700px) {
@@ -119,8 +398,9 @@
                 <li :aria-current="currentStep === 2 ? 'step' : null"><strong>2. Sharing</strong> <small>(optional)</small></li>
             </ol>
         </nav>
-        <form @submit.prevent="recordTransaction" @keydown.ctrl.enter.prevent="handleShortcut" @keydown.meta.enter.prevent="handleShortcut">
-            <fieldset>
+        <form class="payment-form" @submit.prevent="recordTransaction" @keydown.ctrl.enter.prevent="handleShortcut" @keydown.meta.enter.prevent="handleShortcut">
+                <fieldset class="payment-details-panel">
+                    <legend><i data-lucide="receipt-text" aria-hidden="true"></i> Payment details</legend>
                     <label for="description">Description <small>(optional)</small>
                         <input id="description" type="text" v-model="description" placeholder="What was this for? e.g. groceries at Brodies">
                     </label>
@@ -177,7 +457,7 @@
                         </div>
                         <div class="grid payer-row">
                             <label :for="'payer-name-' + index">Person or account
-                                <input :id="'payer-name-' + index" type="text" list="payer-options" v-model="payer.name" placeholder="Choose or type" required :aria-invalid="Boolean(payerNameError(payer))">
+                                <input :id="'payer-name-' + index" data-person-combobox type="text" list="payer-options" v-model="payer.name" placeholder="Choose or type" required :aria-invalid="Boolean(payerNameError(payer))">
                                 <small v-if="payerNameError(payer)" role="alert">{{ payerNameError(payer) }}</small>
                             </label>
                             <label :for="'payer-amount-' + index">Amount paid
@@ -201,21 +481,21 @@
 
                 <hr>
 
-                <fieldset v-if="currentStep === 1">
+                <fieldset v-if="currentStep === 1" class="expense-sharing-section">
                     <legend><i data-lucide="users-round" aria-hidden="true"></i> Expense sharing</legend>
-                    <div class="grid">
+                    <div class="grid sharing-choice-grid">
                         <div>
-                            <label><input type="radio" value="none" v-model="sharingMode" @change="disableSharing"> No sharing</label>
-                            <small>Personal expense</small>
+                            <label class="sharing-choice"><input type="radio" value="none" v-model="sharingMode" @change="disableSharing"><span>No sharing</span></label>
+                            <small class="sharing-choice-note">Personal expense</small>
                         </div>
                         <div>
-                            <label><input type="radio" value="shared" v-model="sharingMode" @change="enableSharing"> Shared expense</label>
-                            <small>Split this expense</small>
+                            <label class="sharing-choice"><input type="radio" value="shared" v-model="sharingMode" @change="enableSharing"><span>Shared expense</span></label>
                         </div>
                     </div>
+                    <p v-if="sharingMode === 'shared'" class="sharing-next-step"><i data-lucide="users-round" aria-hidden="true"></i> Split this expense</p>
                 </fieldset>
 
-                <details v-if="currentStep === 2 && sharingMode === 'shared'" open>
+                <details class="sharing-panel" v-if="currentStep === 2 && sharingMode === 'shared'" open>
                     <summary><i data-lucide="sliders-horizontal" aria-hidden="true"></i> Sharing details</summary>
                     <fieldset>
                         <legend>Who was this expense for?</legend>
@@ -236,7 +516,7 @@
                             </div>
                             <div class="grid participant-row" :class="{ 'custom-share-row': allocationMode === 'custom' }">
                                 <label :for="'participant-name-' + index">Person or group
-                                    <input :id="'participant-name-' + index" type="text" list="participant-options" v-model="participant.name" placeholder="Choose or type">
+                                    <input :id="'participant-name-' + index" data-person-combobox type="text" list="participant-options" v-model="participant.name" placeholder="Choose or type">
                                 </label>
                                 <label v-if="allocationMode === 'custom'" :for="'participant-share-' + index">Share amount
                                     <input :id="'participant-share-' + index" type="number" min="0" step="0.01" v-model="participant.share" inputmode="decimal" placeholder="0.00">
@@ -260,8 +540,7 @@
                 <hr>
 
                 <div v-if="currentStep === 1 && sharingMode === 'shared'" class="grid">
-                    <button type="button" @click="continueToSharing"><i data-lucide="arrow-right" aria-hidden="true"></i> Continue to sharing</button>
-                    <button type="button" class="secondary" @click="saveSharedForLater"><i data-lucide="bookmark" aria-hidden="true"></i> Save sharing for later</button>
+                    <button type="button" class="shared-continue-action" @click="continueToSharing"><i data-lucide="arrow-right" aria-hidden="true"></i> Continue to sharing</button>
                 </div>
                 <div v-if="currentStep === 1 && sharingMode === 'none'" class="grid" style="grid-template-columns: 1fr 1fr 1fr; align-items: center;">
                     <button type="submit" style="grid-column: 1 / -1;"><i data-lucide="save" aria-hidden="true"></i> {{ editId ? 'Update transaction' : 'Save transaction' }}</button>
@@ -270,15 +549,23 @@
                     <button type="button" class="secondary" @click="backToPayment"><i data-lucide="arrow-left" aria-hidden="true"></i> Back to payment</button>
                     <button type="submit"><i data-lucide="save" aria-hidden="true"></i> {{ editId ? 'Update transaction' : 'Save transaction' }}</button>
                 </div>
-                <div style="text-align: right;">
-                    <a href="#" @click.prevent="clearForm" data-tooltip="Clear form" aria-label="Clear form"><i data-lucide="eraser" aria-hidden="true"></i> Clear form</a>
+                <div class="form-utility-actions">
+                    <div class="utility-items">
+                    <div v-if="currentStep === 1 && sharingMode === 'shared'" class="save-later-action">
+                        <small>Saves the payment now; remaining details can be completed later.</small>
+                        <button type="button" class="secondary outline" @click="saveIncompletePayment"><i data-lucide="bookmark" aria-hidden="true"></i> Save with details pending</button>
+                    </div>
+                    </div>
+                    <div class="clear-form-action">
+                        <button type="button" class="secondary outline clear-form-button" @click="clearFormSafely" data-tooltip="Clear form"><i data-lucide="eraser" aria-hidden="true"></i> Clear form</button>
+                    </div>
                 </div>
                 <p v-if="message" role="status"><i data-lucide="check-circle-2" aria-hidden="true"></i> {{ message }}</p>
                 <p v-if="error" role="alert">Please check the highlighted fields.</p>
             </form>
         </article>
 
-        <article aria-labelledby="recent-heading">
+        <article class="recent-payments-panel" aria-labelledby="recent-heading">
             <header>
                 <h2 id="recent-heading"><i data-lucide="clock-3" aria-hidden="true"></i> Recent payments</h2>
             </header>
@@ -294,7 +581,7 @@
                                 <time :datetime="transaction.date"><small>{{ transaction.date }}</small></time>
                             </div>
                             <span>
-                                <a href="#" @click.prevent="deleteTransaction(transaction)" data-tooltip="Remove transaction" aria-label="Remove transaction">
+                                <a href="#" class="icon-action-link" @click.prevent="deleteTransaction(transaction)" data-tooltip="Remove transaction" aria-label="Remove transaction">
                                     <i data-lucide="trash-2" aria-hidden="true"></i>
                                 </a>
                             </span>
@@ -304,22 +591,25 @@
                         <div>
                             <small>Amount</small>
                             <br>
-                            <strong>{{ formatAmount(transaction) }}</strong>
+                            <strong class="currency-amount compact"><span class="currency-value">{{ formatValue(transaction) }}</span><small class="currency-code">{{ formatCurrency(transaction) }}</small></strong>
                             <template v-if="convertedSummary(transaction)">
                                 <br>
                                 <small>Converted total</small>
                                 <br>
-                                <strong>{{ convertedSummary(transaction) }}</strong>
+                                <strong class="currency-amount compact"><span class="currency-value">{{ convertedValue(transaction) }}</span><small class="currency-code">BZD</small></strong>
                             </template>
                         </div>
-                        <div>
+                            <div>
                             <small>Paid by</small>
                             <br>
-                            <small>{{ payerSummary(transaction) }}</small>
+                            <strong v-if="transaction.type === 'settlement'">{{ transaction.paidBy || "Unknown" }}</strong>
+                            <span v-else class="payer-list">
+                                <span v-for="payer in payerEntries(transaction)"><strong>{{ payer.name }}</strong> <span class="currency-inline"><span>{{ payer.value }}</span><small class="currency-code">{{ payer.currency }}</small></span><br></span>
+                            </span>
                         </div>
                     </div>
                     <footer>
-                        <small>{{ sharingSummary(transaction) }}</small>
+                        <small class="status-tag" :class="transactionStatusClass(transaction)">{{ transactionStatusLabel(transaction) }}</small>
                     </footer>
                     </article>
                 </div>

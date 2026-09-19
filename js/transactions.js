@@ -38,9 +38,16 @@ createApp({
     },
 
     transactionAmount(transaction) {
-      const currency = transaction.originalCurrency || transaction.currency || "BZD";
+      return `${this.transactionCurrency(transaction)} ${this.transactionValue(transaction)}`;
+    },
+
+    transactionCurrency(transaction) {
+      return transaction.originalCurrency || transaction.currency || "BZD";
+    },
+
+    transactionValue(transaction) {
       const amount = transaction.originalAmount ?? transaction.amount ?? 0;
-      return `${currency} ${Number(amount).toFixed(2)}`;
+      return Number(amount).toFixed(2);
     },
 
     payerSummary(transaction) {
@@ -49,6 +56,18 @@ createApp({
         return transaction.payers.map(payer => `${payer.name}: ${transaction.originalCurrency || "BZD"} ${Number(payer.amount).toFixed(2)}`).join("; ");
       }
       return `Paid by ${transaction.paidBy || "Unknown"}`;
+    },
+
+    payerEntries(transaction) {
+      const currency = transaction.originalCurrency || transaction.currency || "BZD";
+      if (Array.isArray(transaction.payers)) {
+        return transaction.payers.map(payer => ({
+          name: payer.name || "Unknown",
+          value: Number(payer.amount || 0).toFixed(2),
+          currency
+        }));
+      }
+      return [{ name: transaction.paidBy || "Unknown", value: "", currency: "" }];
     },
 
     sharingSummary(transaction) {
@@ -60,11 +79,26 @@ createApp({
       return "Sharing not added";
     },
 
+    transactionStatusLabel(transaction) {
+      if (transaction.type === "settlement") return "Payback";
+      if (transaction.sharing?.status === "incomplete") return "Details pending";
+      if (transaction.allocation?.mode === "none") return "Personal payment";
+      return "Payment";
+    },
+
+    transactionStatusClass(transaction) {
+      if (transaction.type === "settlement") return "payback";
+      if (transaction.sharing?.status === "incomplete") return "pending";
+      if (transaction.allocation?.mode === "none") return "personal";
+      return "shared";
+    },
+
     editTransaction(transaction) {
       window.location.href = `record-transaction.html?edit=${encodeURIComponent(transaction.id)}`;
     },
 
     async deleteTransaction(transaction) {
+      if (!await window.confirmDeleteTransaction()) return;
       try {
         await deleteStoredTransaction(transaction);
       } catch (error) {

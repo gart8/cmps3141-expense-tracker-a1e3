@@ -6,8 +6,12 @@
     <title>Dashboard | Dalla Tab</title>
     <link rel="icon" href="assets/dalla-tab-mark.svg" type="image/svg+xml">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <link rel="stylesheet" href="css/icon-actions.css">
+    <link rel="stylesheet" href="css/currency-amount.css">
+    <link rel="stylesheet" href="css/confirm-modal.css">
     <script src="https://unpkg.com/lucide@0.468.0"></script>
     <script type="module" src="js/dashboard.js"></script>
+    <script type="module" src="js/confirm-modal.js"></script>
     <style>
         .activity-list {
             list-style: none;
@@ -38,13 +42,21 @@
 
         .activity-icon {
             align-items: center;
-            background: #e4edfc;
-            border-radius: 50%;
             display: flex;
-            color: #304c70;
-            height: 3.5rem;
+            color: #61758d;
+            height: 1.5rem;
             justify-content: center;
-            width: 3.5rem;
+            width: 1.5rem;
+        }
+
+        .activity-icon.payback {
+            color: #168456;
+        }
+
+        .activity-icon svg {
+            height: 1.35rem;
+            stroke-width: 2;
+            width: 1.35rem;
         }
 
         .activity-main,
@@ -117,7 +129,7 @@
 
         .activity-actions {
             display: flex;
-            gap: 0.35rem;
+            gap: 0.9rem;
             justify-content: flex-end;
         }
 
@@ -125,8 +137,24 @@
             background: transparent;
             border-color: #cfddf0;
             color: #58708f;
+            flex: 0 0 2.5rem;
+            height: 2.5rem;
             margin: 0;
+            overflow: hidden;
             padding: 0.45rem;
+            width: 2.5rem;
+        }
+
+        .activity-actions .primary-action {
+            background: #1671e8;
+            border-color: #1671e8;
+            color: #ffffff;
+        }
+
+        .activity-actions .danger-action {
+            background: #ffffff;
+            border-color: #e1b9b9;
+            color: #a34f4f;
         }
 
         @media (max-width: 600px) {
@@ -143,7 +171,7 @@
             .activity-actions {
                 display: flex;
                 flex-direction: column;
-                gap: 0.35rem;
+                gap: 0.75rem;
             }
 
             .activity-info,
@@ -213,7 +241,7 @@
                     <div v-if="balanceRows.length">
                         <div v-for="balance in balanceRows.slice(0, 2)" class="grid" style="grid-template-columns: 1fr auto;">
                             <span>{{ balance.name }} {{ balance.label }}</span>
-                            <strong>{{ balance.amount }}</strong>
+                            <strong class="currency-amount compact"><span class="currency-value">{{ balance.amountValue }}</span><small class="currency-code">{{ balance.currency }}</small></strong>
                         </div>
                         <hr>
                         <small><i data-lucide="check-circle-2" aria-hidden="true"></i> All balances calculated</small>
@@ -263,7 +291,7 @@
                 <ul class="activity-list">
                     <li v-for="transaction in recentTransactions" class="activity-item">
                         <div class="activity-info">
-                            <div class="activity-icon"><i :data-lucide="transaction.source.type === 'settlement' ? 'arrow-left-right' : 'receipt'" aria-hidden="true"></i></div>
+                            <div class="activity-icon" :class="transaction.source.type === 'settlement' ? 'payback' : 'payment'"><i :data-lucide="transaction.source.type === 'settlement' ? 'arrow-left-right' : 'receipt'" aria-hidden="true"></i></div>
                             <div class="activity-main">
                                 <strong class="activity-title">{{ transaction.title }}</strong>
                                 <small class="activity-date">{{ transaction.date }}</small>
@@ -273,11 +301,11 @@
                         </div>
                         <div class="activity-side">
                             <div class="activity-amount">
-                                <strong>{{ transaction.amount }}</strong>
+                                <strong class="currency-amount"><span class="currency-value">{{ transaction.amountValue }}</span><small class="currency-code">{{ transaction.currency }}</small></strong>
                             </div>
-                            <div class="activity-actions">
-                                <button v-if="transaction.source.type !== 'settlement'" type="button" class="secondary" @click="editTransaction(transaction)" data-tooltip="Edit transaction" aria-label="Edit transaction"><i data-lucide="pencil" aria-hidden="true"></i></button>
-                                <button type="button" class="secondary outline" @click="deleteTransaction(transaction)" data-tooltip="Delete transaction" aria-label="Delete transaction"><i data-lucide="trash-2" aria-hidden="true"></i></button>
+                            <div class="activity-actions transaction-actions">
+                                <button v-if="transaction.source.type !== 'settlement'" type="button" class="icon-action-button primary-action" @click="editTransaction(transaction)" data-tooltip="Edit transaction" aria-label="Edit transaction"><i data-lucide="pencil" aria-hidden="true"></i></button>
+                                <button type="button" class="icon-action-button danger-action" @click="deleteTransaction(transaction)" data-tooltip="Delete transaction" aria-label="Delete transaction"><i data-lucide="trash-2" aria-hidden="true"></i></button>
                             </div>
                         </div>
                     </li>

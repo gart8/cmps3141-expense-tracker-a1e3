@@ -1,0 +1,90 @@
+dialog#delete-confirmation-modal {
+    border: 0;
+    max-width: min(32rem, calc(100vw - 2rem));
+    padding: 0;
+    width: 100%;
+}
+
+dialog#delete-confirmation-modal::backdrop {
+    background: rgba(19, 54, 93, 0.38);
+}
+
+.delete-confirmation-card {
+    border: 1px solid #dce6f2;
+    border-radius: 0.75rem;
+    box-shadow: 0 0.75rem 2rem rgba(39, 67, 102, 0.18);
+    margin: 0;
+    padding: 1.35rem 1.5rem 1.25rem;
+}
+
+.delete-confirmation-card header {
+    align-items: center;
+    background: transparent;
+    border: 0;
+    margin: 0 0 0.85rem;
+    padding: 0;
+    display: flex;
+    gap: 0.65rem;
+}
+
+.delete-confirmation-card h2 {
+    color: #17365d;
+    font-size: 1.25rem;
+    margin: 0;
+}
+
+.delete-confirmation-card h2 svg {
+    color: #a34f4f;
+    vertical-align: -0.12em;
+}
+
+.delete-confirmation-card > p {
+    color: #5d7188;
+    margin: 0 0 1.2rem;
+}
+
+.delete-confirmation-actions {
+    align-items: center;
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    margin: 0;
+    padding: 0;
+}
+
+.delete-confirmation-actions button {
+    margin: 0;
+}
+
+.delete-confirmation-card header h2 {
+    flex: 1;
+}
+
+.delete-confirmation-card .close {
+    color: #aab6c4;
+    margin: 0;
+    padding: 0.15rem;
+}
+
+.delete-confirm-button {
+    background: #ffffff;
+    border: 1px solid #e1b9b9;
+    color: #a34f4f;
+}
+
+.delete-confirm-button:hover,
+.delete-confirm-button:focus {
+    background: #fff2f2;
+    border-color: #c98383;
+}
+
+@media (max-width: 500px) {
+    .delete-confirmation-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .delete-confirmation-actions button {
+        width: 100%;
+    }
+}

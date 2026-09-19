@@ -1,0 +1,29 @@
+.status-tag {
+    border-radius: 999px;
+    display: inline-block;
+    font-size: 0.82rem;
+    font-weight: 650;
+    line-height: 1.2;
+    padding: 0.22rem 0.7rem;
+}
+
+.status-tag.payment,
+.status-tag.shared {
+    background: #e5efff;
+    color: #1671e8;
+}
+
+.status-tag.payback {
+    background: #d9f5e5;
+    color: #168456;
+}
+
+.status-tag.pending {
+    background: #fff2d9;
+    color: #95651a;
+}
+
+.status-tag.personal {
+    background: #edf1f5;
+    color: #62758e;
+}

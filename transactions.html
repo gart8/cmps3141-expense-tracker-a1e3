@@ -6,8 +6,13 @@
     <title>Payment History | Dalla Tab</title>
     <link rel="icon" href="assets/dalla-tab-mark.svg" type="image/svg+xml">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <link rel="stylesheet" href="css/status-tags.css">
+    <link rel="stylesheet" href="css/icon-actions.css">
+    <link rel="stylesheet" href="css/currency-amount.css">
+    <link rel="stylesheet" href="css/confirm-modal.css">
     <script src="https://unpkg.com/lucide@0.468.0"></script>
     <script type="module" src="js/transactions.js"></script>
+    <script type="module" src="js/confirm-modal.js"></script>
     <style>
         .transaction-filters {
             align-items: end;
@@ -18,9 +23,167 @@
             margin-bottom: 0;
         }
 
+        .transaction-card-list {
+            display: block;
+        }
+
+        .transaction-card {
+            border: 1px solid #dce6f2;
+            border-radius: 0.7rem;
+            box-shadow: 0 0.25rem 1rem rgba(39, 67, 102, 0.06);
+            margin-bottom: 1rem;
+            padding: 1rem;
+        }
+
+        .transaction-card-header,
+        .transaction-card-row {
+            align-items: start;
+            display: flex;
+            gap: 1rem;
+            justify-content: space-between;
+        }
+
+        .transaction-card-header {
+            border-bottom: 1px solid #e5ebf2;
+            margin-left: 0;
+            margin-right: 0;
+            padding-bottom: 0.8rem;
+        }
+
+        .transaction-card-title {
+            display: block;
+            overflow-wrap: anywhere;
+        }
+
+        .transaction-card-amount {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+            text-align: right;
+        }
+
+        .transaction-card-amount .amount-currency {
+            color: var(--pico-muted-color);
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            margin-top: 0.2rem;
+            text-transform: uppercase;
+        }
+
+        .transaction-card-date,
+        .transaction-card-label {
+            color: var(--pico-muted-color);
+            display: block;
+            font-size: 0.9rem;
+        }
+
+        .transaction-card-row {
+            border-bottom: 1px solid #e5ebf2;
+            padding: 0.8rem 0;
+        }
+
+        .transaction-card-row:last-of-type {
+            border-bottom: 0;
+        }
+
+        .transaction-card-actions {
+            display: flex;
+            gap: 0.9rem;
+            justify-content: flex-end;
+            margin-left: 0;
+            margin-right: 0;
+            padding: 0;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .transaction-card-actions button {
+            margin: 0;
+            padding: 0.45rem;
+        }
+
+        @media (min-width: 901px) {
+            .transaction-card-list {
+                display: grid;
+                gap: 0.65rem;
+            }
+
+            .transaction-card {
+                align-items: flex-start;
+                display: flex;
+                gap: 1rem;
+                margin-bottom: 0;
+            }
+
+            .transaction-card-header {
+                align-items: flex-start;
+                border-bottom: 0;
+                display: contents;
+                gap: 1rem;
+                margin: 0;
+                min-width: 0;
+                padding-bottom: 0;
+            }
+
+            .transaction-card-header > div {
+                flex: 0 0 25%;
+                min-width: 0;
+            }
+
+            .transaction-card-header > strong {
+                align-self: center;
+                color: #17365d;
+                flex: 0 0 7.5rem;
+                font-size: 1.1rem;
+                text-align: center;
+                white-space: nowrap;
+            }
+
+            .transaction-card-title {
+                max-width: 100%;
+            }
+
+            .transaction-card-header > div {
+                min-width: 0;
+            }
+
+            .transaction-card-row {
+                border-bottom: 0;
+                display: flex;
+                flex: 1 1 10rem;
+                flex-direction: column;
+                gap: 0.25rem;
+                justify-content: flex-start;
+                min-width: 0;
+                padding: 0;
+            }
+
+            .transaction-card-row > span:last-child {
+                overflow-wrap: anywhere;
+            }
+
+            .transaction-card-actions {
+                flex: 0 0 auto;
+                overflow: hidden;
+                width: 7.5rem;
+            }
+        }
+
         @media (max-width: 700px) {
             .transaction-filters {
                 grid-template-columns: 1fr;
+            }
+
+            .transaction-card-header,
+            .transaction-card-row {
+                gap: 0.75rem;
+            }
+
+            .transaction-card-actions {
+                align-items: center;
+                flex-direction: row;
+                justify-content: flex-end;
             }
         }
     </style>
@@ -82,32 +245,35 @@
         <p><strong>{{ filteredTransactions.length }}</strong> payment<span v-if="filteredTransactions.length !== 1">s</span> shown</p>
 
         <p v-if="filteredTransactions.length === 0">No matching payments found.</p>
-        <figure v-else>
-            <table>
-                <thead>
-                    <ul><li><a href="#profile">Account</a></li></ul>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="transaction in filteredTransactions">
-                        <td><time :datetime="transaction.date">{{ transaction.date }}</time></td>
-                        <td>
-                            <strong>{{ transactionTitle(transaction) }}</strong><br>
-                            <small>{{ transaction.category || "No category" }}</small>
-                        </td>
-                        <td><small>{{ payerSummary(transaction) }}</small></td>
-                        <td><strong>{{ transactionAmount(transaction) }}</strong></td>
-                        <td><small>{{ sharingSummary(transaction) }}</small></td>
-                        <td>
-                            <span>
-                                <button type="button" class="secondary" @click="editTransaction(transaction)" data-tooltip="Edit transaction" aria-label="Edit transaction"><i data-lucide="pencil" aria-hidden="true"></i></button>
-                                <button type="button" class="secondary outline" @click="deleteTransaction(transaction)" data-tooltip="Delete transaction" aria-label="Delete transaction"><i data-lucide="trash-2" aria-hidden="true"></i></button>
-                            </span>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </figure>
+        <div v-if="filteredTransactions.length" class="transaction-card-list">
+            <article v-for="transaction in filteredTransactions" class="transaction-card">
+                <header class="transaction-card-header">
+                    <div>
+                        <small class="transaction-card-date">{{ transaction.date }}</small>
+                        <strong class="transaction-card-title">{{ transactionTitle(transaction) }}</strong>
+                    </div>
+                    <strong class="transaction-card-amount">
+                        <span class="amount-value">{{ transactionValue(transaction) }}</span>
+                        <small class="amount-currency">{{ transactionCurrency(transaction) }}</small>
+                    </strong>
+                </header>
+                <div class="transaction-card-row">
+                    <span class="transaction-card-label">Paid by</span>
+                    <span v-if="transaction.type === 'settlement'">{{ payerSummary(transaction) }}</span>
+                    <span v-else class="payer-list">
+                        <span v-for="payer in payerEntries(transaction)"><strong>{{ payer.name }}</strong> <span class="currency-inline"><span>{{ payer.value }}</span><small class="currency-code">{{ payer.currency }}</small></span><br></span>
+                    </span>
+                </div>
+                <div class="transaction-card-row">
+                    <span class="transaction-card-label">Status</span>
+                    <small class="status-tag" :class="transactionStatusClass(transaction)">{{ transactionStatusLabel(transaction) }}</small>
+                </div>
+                <footer class="transaction-card-actions transaction-actions">
+                    <button type="button" class="icon-action-button primary-action" @click="editTransaction(transaction)" data-tooltip="Edit transaction" aria-label="Edit transaction"><i data-lucide="pencil" aria-hidden="true"></i></button>
+                    <button type="button" class="icon-action-button danger-action" @click="deleteTransaction(transaction)" data-tooltip="Delete transaction" aria-label="Delete transaction"><i data-lucide="trash-2" aria-hidden="true"></i></button>
+                </footer>
+            </article>
+        </div>
     </main>
 </div>
 

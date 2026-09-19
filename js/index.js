@@ -137,7 +137,7 @@ createApp({
       return this.error && (!Number.isFinite(amount) || amount <= 0) ? "Enter the amount paid." : "";
     },
 
-    saveSharedForLater() {
+    saveIncompletePayment() {
       this.saveIncomplete = true;
       this.recordTransaction();
       this.saveIncomplete = false;
@@ -367,7 +367,7 @@ createApp({
       if (wasEditing) {
         this.message = "Transaction updated. Form is ready for another entry.";
       } else if (wasIncomplete) {
-        this.message = "Payment saved. Sharing can be completed later. Form is ready for another entry.";
+        this.message = "Payment saved. Remaining details can be completed later. Form is ready for another entry.";
       } else {
         this.message = "Transaction saved. Form is ready for another entry.";
       }
@@ -391,7 +391,18 @@ createApp({
       this.error = "";
     },
 
+    clearFormSafely() {
+      const hasEnteredData = Boolean(
+        this.description || this.amount || this.category || this.notes ||
+        this.payers.some(payer => payer.name || payer.amount) ||
+        this.participants.some(participant => participant.name || participant.share)
+      );
+      if (hasEnteredData && !window.confirm("Clear the information entered in this form?")) return;
+      this.clearForm();
+    },
+
     async deleteTransaction(transaction) {
+      if (!await window.confirmDeleteTransaction()) return;
       try {
         await deleteStoredTransaction(transaction);
       } catch (error) {
@@ -405,9 +416,16 @@ createApp({
     },
 
     formatAmount(transaction) {
-      const currency = transaction.originalCurrency || transaction.currency;
+      return `${this.formatCurrency(transaction)} ${this.formatValue(transaction)}`;
+    },
+
+    formatCurrency(transaction) {
+      return transaction.originalCurrency || transaction.currency || "BZD";
+    },
+
+    formatValue(transaction) {
       const amount = transaction.originalAmount ?? transaction.amount;
-      return `${currency} ${Number(amount).toFixed(2)}`;
+      return Number(amount).toFixed(2);
     },
 
     transactionTitle(transaction) {
@@ -426,6 +444,18 @@ createApp({
       return `Paid by ${transaction.paidBy || "Unknown"}`;
     },
 
+    payerEntries(transaction) {
+      const currency = transaction.originalCurrency || transaction.currency || "BZD";
+      if (Array.isArray(transaction.payers)) {
+        return transaction.payers.map(payer => ({
+          name: payer.name || "Unknown",
+          value: Number(payer.amount || 0).toFixed(2),
+          currency
+        }));
+      }
+      return [{ name: transaction.paidBy || "Unknown", value: "", currency: "" }];
+    },
+
     sharingSummary(transaction) {
       if (transaction.sharing?.status === "incomplete") return "Sharing details pending";
       if (transaction.allocation?.mode === "none") return "No sharing needed";
@@ -434,11 +464,29 @@ createApp({
       return "Sharing not added";
     },
 
+    transactionStatusLabel(transaction) {
+      if (transaction.type === "settlement") return "Payback";
+      if (transaction.sharing?.status === "incomplete") return "Details pending";
+      if (transaction.allocation?.mode === "none") return "Personal payment";
+      return "Payment";
+    },
+
+    transactionStatusClass(transaction) {
+      if (transaction.type === "settlement") return "payback";
+      if (transaction.sharing?.status === "incomplete") return "pending";
+      if (transaction.allocation?.mode === "none") return "personal";
+      return "shared";
+    },
+
     convertedSummary(transaction) {
       if (transaction.convertedAmount === undefined || (transaction.originalCurrency || transaction.currency) === "BZD") {
         return "";
       }
       return `BZD ${Number(transaction.convertedAmount).toFixed(2)}`;
+    },
+
+    convertedValue(transaction) {
+      return Number(transaction.convertedAmount).toFixed(2);
     }
   }
 });

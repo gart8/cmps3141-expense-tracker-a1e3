@@ -105,7 +105,8 @@ createApp({
             : transaction.description || `${transactionCurrency(transaction)} ${transactionOriginalAmount(transaction).toFixed(2)} transaction`,
           detail: transactionDetail(transaction),
           date: transactionDateLabel(transaction.date),
-          amount: `${transactionCurrency(transaction)} ${transactionOriginalAmount(transaction).toFixed(2)}`,
+          amountValue: transactionOriginalAmount(transaction).toFixed(2),
+          currency: transactionCurrency(transaction),
           source: transaction
         }));
     },
@@ -148,7 +149,8 @@ createApp({
         .sort((first, second) => second[1] - first[1])
         .map(([name, amount]) => ({
           name,
-          amount: `BZD ${Math.abs(amount).toFixed(2)}`,
+          amountValue: Math.abs(amount).toFixed(2),
+          currency: "BZD",
           label: amount > 0 ? "is owed" : "owes"
         }));
     },
@@ -187,6 +189,7 @@ createApp({
     },
 
     async deleteTransaction(transaction) {
+      if (!await window.confirmDeleteTransaction()) return;
       try {
         await deleteStoredTransaction(transaction.source);
         this.transactions = this.transactions.filter(item => item.id !== transaction.id);

@@ -1,0 +1,59 @@
+.icon-action-button,
+.icon-action-link {
+    align-items: center;
+    display: inline-flex;
+    height: 2.5rem;
+    justify-content: center;
+    margin: 0;
+    padding: 0.45rem;
+    width: 2.5rem;
+}
+
+.icon-action-button {
+    flex: 0 0 2.5rem;
+    max-width: 2.5rem;
+    min-width: 2.5rem;
+    overflow: hidden;
+}
+
+.icon-action-button svg,
+.icon-action-link svg {
+    height: 1.15rem;
+    width: 1.15rem;
+}
+
+.icon-action-button.secondary,
+.icon-action-link {
+    color: #58708f;
+}
+
+.icon-action-button.outline,
+.icon-action-link {
+    background: transparent;
+    border-color: #cfddf0;
+}
+
+.transaction-actions {
+    align-items: center;
+    display: flex;
+    gap: 0.9rem;
+    min-width: 0;
+}
+
+.icon-action-button.primary-action {
+    background: #1671e8;
+    border-color: #1671e8;
+    color: #ffffff;
+}
+
+.icon-action-button.danger-action {
+    background: #ffffff;
+    border-color: #e1b9b9;
+    color: #a34f4f;
+}
+
+.icon-action-link {
+    border: 1px solid #cfddf0;
+    border-radius: var(--pico-border-radius, 0.25rem);
+    text-decoration: none;
+}
