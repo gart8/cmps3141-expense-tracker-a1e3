@@ -20,12 +20,14 @@ function chooseValue(combobox, value) {
   const input = combobox.querySelector("input");
   const list = combobox.querySelector("[role=listbox]");
   if (!input || !list) return;
-  input.value = value;
-  input.dispatchEvent(new Event("input", { bubbles: true }));
-  input.dispatchEvent(new Event("change", { bubbles: true }));
+  // Close first: dispatching input/change below can trigger a framework re-render
+  // that replaces these nodes, so any state set afterward would be lost.
   input.setAttribute("aria-expanded", "false");
   input.setAttribute("aria-activedescendant", "");
   list.hidden = true;
+  input.value = value;
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+  input.dispatchEvent(new Event("change", { bubbles: true }));
 }
 
 function setActiveOption(combobox, index) {
@@ -54,6 +56,8 @@ function renderOptions(combobox) {
   input.dataset.activeIndex = "-1";
 }
 
+let comboboxIdCounter = 0;
+
 function enhanceCombobox(input) {
   if (input.dataset.comboboxReady === "true") return;
   const listId = input.getAttribute("list");
@@ -66,46 +70,23 @@ function enhanceCombobox(input) {
   input.parentElement.insertBefore(combobox, input);
   combobox.appendChild(input);
   input.dataset.comboboxReady = "true";
+  // input.id may not be set yet on frameworks that bind it reactively (e.g. inside a v-for row),
+  // so generate our own stable suffix instead of depending on it.
+  const suggestionsId = `person-combobox-${++comboboxIdCounter}-suggestions`;
   input.setAttribute("role", "combobox");
   input.setAttribute("aria-autocomplete", "list");
-  input.setAttribute("aria-controls", `${input.id}-suggestions`);
+  input.setAttribute("aria-controls", suggestionsId);
   input.setAttribute("aria-expanded", "false");
   input.setAttribute("aria-activedescendant", "");
   input.dataset.suggestionsList = listId;
   input.removeAttribute("list");
 
   const list = document.createElement("ul");
-  list.id = `${input.id}-suggestions`;
+  list.id = suggestionsId;
   list.className = "person-combobox-list";
   list.setAttribute("role", "listbox");
   list.hidden = true;
   combobox.appendChild(list);
-
-  input.addEventListener("input", () => renderOptions(combobox));
-  input.addEventListener("focus", () => renderOptions(combobox));
-  input.addEventListener("keydown", event => {
-    const options = [...combobox.querySelectorAll(`.${optionClass}`)];
-    const activeIndex = Number(input.dataset.activeIndex || -1);
-    if (event.key === "ArrowDown") {
-      event.preventDefault();
-      setActiveOption(combobox, activeIndex + 1);
-    } else if (event.key === "ArrowUp") {
-      event.preventDefault();
-      setActiveOption(combobox, activeIndex - 1);
-    } else if (event.key === "Enter") {
-      if (input.getAttribute("aria-expanded") !== "true") return;
-      event.preventDefault();
-      if (options[activeIndex]) chooseValue(combobox, options[activeIndex].dataset.value);
-      else if (input.value.trim()) chooseValue(combobox, input.value.trim());
-    } else if (event.key === "Escape") {
-      closeCombobox(combobox);
-    }
-  });
-
-  list.addEventListener("mousedown", event => {
-    const option = event.target.closest(`.${optionClass}`);
-    if (option) chooseValue(combobox, option.dataset.value);
-  });
 }
 
 function enhanceAllComboboxes() {
@@ -116,6 +97,17 @@ document.addEventListener("click", event => {
   document.querySelectorAll(`.${comboboxClass}`).forEach(combobox => {
     if (!combobox.contains(event.target)) closeCombobox(combobox);
   });
+});
+
+// Delegated at the document level (rather than attached per-list) so selection keeps working
+// even when a reactive framework re-renders and replaces the list/option elements.
+document.addEventListener("mousedown", event => {
+  const option = event.target.closest(`.${optionClass}`);
+  if (!option) return;
+  const combobox = option.closest(`.${comboboxClass}`);
+  if (!combobox) return;
+  event.preventDefault();
+  chooseValue(combobox, option.dataset.value);
 });
 
 document.addEventListener("input", event => {
